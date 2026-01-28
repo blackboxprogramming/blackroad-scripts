@@ -1,3 +1,5 @@
+'use client'
+
 import { STRIPE_PRODUCTS } from '@/lib/stripe-config'
 
 export default function PricingPage() {
