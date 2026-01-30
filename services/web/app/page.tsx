@@ -1,6 +1,16 @@
+'use client'
+
 export default function Home() {
   const serviceName = 'blackroad-os-web'
   const serviceEnv = process.env.SERVICE_ENV || 'development'
+
+  const handleSignIn = () => {
+    alert('Sign in will be enabled once Clerk keys are configured in Vercel')
+  }
+
+  const handleCheckout = () => {
+    alert('Checkout will be enabled once Stripe keys are configured in Vercel')
+  }
 
   return (
     <main style={{
@@ -38,11 +48,45 @@ export default function Home() {
           fontSize: '1.5rem',
           textAlign: 'center',
           color: '#a1a1aa',
-          marginBottom: '3rem',
+          marginBottom: '2rem',
           fontWeight: 300
         }}>
           Operator-controlled • Local-first • Sovereign
         </p>
+
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '1rem',
+          marginBottom: '3rem'
+        }}>
+          <button onClick={handleSignIn} style={{
+            padding: '0.75rem 2rem',
+            fontSize: '1rem',
+            backgroundColor: '#667eea',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontWeight: 600,
+            transition: 'all 0.2s'
+          }}>
+            Sign In
+          </button>
+          <button onClick={handleSignIn} style={{
+            padding: '0.75rem 2rem',
+            fontSize: '1rem',
+            backgroundColor: '#764ba2',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontWeight: 600,
+            transition: 'all 0.2s'
+          }}>
+            Get Started
+          </button>
+        </div>
 
         <div style={{
           display: 'flex',
@@ -130,6 +174,91 @@ export default function Home() {
             <p style={{ color: '#a1a1aa', lineHeight: '1.6' }}>
               Own your stack. Build and deploy on your terms, your way.
             </p>
+          </div>
+        </div>
+
+        <div style={{
+          marginBottom: '3rem',
+          padding: '3rem',
+          backgroundColor: 'rgba(102, 126, 234, 0.05)',
+          borderRadius: '12px',
+          border: '1px solid rgba(102, 126, 234, 0.2)'
+        }}>
+          <h2 style={{
+            fontSize: '2.5rem',
+            textAlign: 'center',
+            marginBottom: '1rem',
+            color: '#e0e0e0'
+          }}>
+            Simple Pricing
+          </h2>
+          <p style={{
+            fontSize: '1.125rem',
+            textAlign: 'center',
+            color: '#a1a1aa',
+            marginBottom: '3rem'
+          }}>
+            Get started with BlackRoad OS Professional
+          </p>
+
+          <div style={{
+            maxWidth: '400px',
+            margin: '0 auto',
+            padding: '2.5rem',
+            backgroundColor: 'rgba(26, 26, 26, 0.8)',
+            borderRadius: '12px',
+            border: '1px solid rgba(102, 126, 234, 0.3)',
+            textAlign: 'center'
+          }}>
+            <h3 style={{
+              fontSize: '1.5rem',
+              marginBottom: '1rem',
+              color: '#667eea'
+            }}>
+              Professional
+            </h3>
+            <div style={{
+              fontSize: '3rem',
+              fontWeight: 700,
+              marginBottom: '0.5rem',
+              color: '#e0e0e0'
+            }}>
+              $97<span style={{ fontSize: '1.5rem', color: '#888' }}>/mo</span>
+            </div>
+            <p style={{
+              color: '#a1a1aa',
+              marginBottom: '2rem'
+            }}>
+              Full access to BlackRoad OS infrastructure
+            </p>
+            <ul style={{
+              textAlign: 'left',
+              listStyle: 'none',
+              padding: 0,
+              marginBottom: '2rem'
+            }}>
+              <li style={{ padding: '0.5rem 0', color: '#a1a1aa' }}>✓ Unlimited deployments</li>
+              <li style={{ padding: '0.5rem 0', color: '#a1a1aa' }}>✓ 24/7 infrastructure access</li>
+              <li style={{ padding: '0.5rem 0', color: '#a1a1aa' }}>✓ Priority support</li>
+              <li style={{ padding: '0.5rem 0', color: '#a1a1aa' }}>✓ Advanced monitoring</li>
+            </ul>
+            <button
+              onClick={handleCheckout}
+              style={{
+                width: '100%',
+                padding: '1rem 2rem',
+                fontSize: '1.125rem',
+                backgroundColor: '#667eea',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: 600,
+                transition: 'all 0.2s'
+              }}
+            >
+              Subscribe Now
+            </button>
           </div>
         </div>
 

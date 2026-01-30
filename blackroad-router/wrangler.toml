@@ -1,0 +1,13 @@
+name = "blackroad-router"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+routes = [
+  { pattern = "blackroad.io/*", zone_name = "blackroad.io" },
+  { pattern = "www.blackroad.io/*", zone_name = "blackroad.io" },
+  { pattern = "app.blackroad.io/*", zone_name = "blackroad.io" },
+  { pattern = "docs.blackroad.io/*", zone_name = "blackroad.io" },
+  { pattern = "demo.blackroad.io/*", zone_name = "blackroad.io" },
+  { pattern = "home.blackroad.io/*", zone_name = "blackroad.io" },
+  { pattern = "brand.blackroad.io/*", zone_name = "blackroad.io" },
+]

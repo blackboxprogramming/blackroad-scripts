@@ -8,8 +8,8 @@ interface Env {
 }
 
 const ROUTES: Record<string, string> = {
-  'blackroad.io': 'https://web-mocha-ten-57.vercel.app',
-  'www.blackroad.io': 'https://web-mocha-ten-57.vercel.app',
+  'blackroad.io': 'https://web-9to8ea8bw-alexa-amundsons-projects.vercel.app',
+  'www.blackroad.io': 'https://web-9to8ea8bw-alexa-amundsons-projects.vercel.app',
   'app.blackroad.io': 'https://blackroad-console.pages.dev',
   'docs.blackroad.io': 'https://blackroad-os-docs.pages.dev',
   'demo.blackroad.io': 'https://blackroad-os-demo.pages.dev',
