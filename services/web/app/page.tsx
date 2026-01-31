@@ -1,374 +1,90 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+
 export default function Home() {
-  const serviceName = 'blackroad-os-web'
-  const serviceEnv = process.env.SERVICE_ENV || 'development'
+  const [user, setUser] = useState<any>(null)
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem('demo_user')
+    if (savedUser) setUser(JSON.parse(savedUser))
+  }, [])
 
   const handleSignIn = () => {
-    alert('Sign in will be enabled once Clerk keys are configured in Vercel')
+    const demoUser = { email: 'demo@blackroad.io', name: 'Demo User' }
+    localStorage.setItem('demo_user', JSON.stringify(demoUser))
+    setUser(demoUser)
   }
 
-  const handleCheckout = () => {
-    alert('Checkout will be enabled once Stripe keys are configured in Vercel')
+  const handleSignOut = () => {
+    localStorage.removeItem('demo_user')
+    setUser(null)
   }
 
   return (
-    <main style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '2rem',
-      background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%)'
-    }}>
-      <div style={{
-        maxWidth: '1200px',
-        width: '100%',
-        padding: '3rem',
-        backgroundColor: 'rgba(26, 26, 26, 0.8)',
-        borderRadius: '16px',
-        border: '1px solid rgba(102, 126, 234, 0.3)',
-        backdropFilter: 'blur(10px)'
-      }}>
-        <h1 style={{
-          fontSize: '4rem',
-          marginBottom: '1rem',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-          textAlign: 'center',
-          fontWeight: 800
-        }}>
-          BlackRoad OS
-        </h1>
+    <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%)', position: 'relative' }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(244, 143, 177, 0.3) 0%, transparent 50%)' }} />
+      
+      <div style={{ maxWidth: '1200px', width: '100%', padding: '3rem', backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '24px', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', position: 'relative', zIndex: 1 }}>
+        <h1 style={{ fontSize: '4.5rem', marginBottom: '1rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textAlign: 'center', fontWeight: 900, letterSpacing: '-0.02em' }}>BlackRoad OS</h1>
         
-        <p style={{
-          fontSize: '1.5rem',
-          textAlign: 'center',
-          color: '#a1a1aa',
-          marginBottom: '2rem',
-          fontWeight: 300
-        }}>
-          Operator-controlled • Local-first • Sovereign
-        </p>
+        <p style={{ fontSize: '1.5rem', textAlign: 'center', color: '#667eea', marginBottom: '2rem', fontWeight: 600 }}>Operator-controlled • Local-first • Sovereign</p>
 
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '1rem',
-          marginBottom: '3rem'
-        }}>
-          <button onClick={handleSignIn} style={{
-            padding: '0.75rem 2rem',
-            fontSize: '1rem',
-            backgroundColor: '#667eea',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontWeight: 600,
-            transition: 'all 0.2s'
-          }}>
-            Sign In
-          </button>
-          <button onClick={handleSignIn} style={{
-            padding: '0.75rem 2rem',
-            fontSize: '1rem',
-            backgroundColor: '#764ba2',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontWeight: 600,
-            transition: 'all 0.2s'
-          }}>
-            Get Started
-          </button>
-        </div>
-
-        <div style={{
-          display: 'flex',
-          gap: '1rem',
-          marginBottom: '2rem',
-          fontSize: '0.875rem',
-          flexWrap: 'wrap'
-        }}>
-          <span style={{
-            padding: '0.25rem 0.75rem',
-            backgroundColor: '#2a2a2a',
-            borderRadius: '4px',
-            border: '1px solid #444'
-          }}>
-            {serviceName}
-          </span>
-          <span style={{
-            padding: '0.25rem 0.75rem',
-            backgroundColor: serviceEnv === 'production' ? '#1a472a' : '#2a2a2a',
-            borderRadius: '4px',
-            border: `1px solid ${serviceEnv === 'production' ? '#2d5f3d' : '#444'}`
-          }}>
-            {serviceEnv}
-          </span>
-          <span style={{
-            padding: '0.25rem 0.75rem',
-            backgroundColor: '#2a2a2a',
-            borderRadius: '4px',
-            border: '1px solid #444',
-            color: '#888'
-          }}>
-            web.blackroad.io
-          </span>
-          <span style={{
-            padding: '0.25rem 0.75rem',
-            backgroundColor: '#2a2a2a',
-            borderRadius: '4px',
-            border: '1px solid #444',
-            color: '#888'
-          }}>
-            web.blackroad.systems
-          </span>
-        </div>
-
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '1.5rem',
-          marginBottom: '3rem'
-        }}>
-          <div style={{
-            padding: '2rem',
-            backgroundColor: 'rgba(102, 126, 234, 0.05)',
-            borderRadius: '12px',
-            border: '1px solid rgba(102, 126, 234, 0.2)'
-          }}>
-            <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🎯</div>
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.75rem', color: '#e0e0e0' }}>Operator-Controlled</h3>
-            <p style={{ color: '#a1a1aa', lineHeight: '1.6' }}>
-              Full control over your infrastructure. No black boxes, no vendor lock-in.
-            </p>
-          </div>
-          
-          <div style={{
-            padding: '2rem',
-            backgroundColor: 'rgba(118, 75, 162, 0.05)',
-            borderRadius: '12px',
-            border: '1px solid rgba(118, 75, 162, 0.2)'
-          }}>
-            <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🔒</div>
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.75rem', color: '#e0e0e0' }}>Local-First</h3>
-            <p style={{ color: '#a1a1aa', lineHeight: '1.6' }}>
-              Your data stays on your hardware. Privacy and security by design.
-            </p>
-          </div>
-          
-          <div style={{
-            padding: '2rem',
-            backgroundColor: 'rgba(102, 126, 234, 0.05)',
-            borderRadius: '12px',
-            border: '1px solid rgba(102, 126, 234, 0.2)'
-          }}>
-            <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>⚡</div>
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.75rem', color: '#e0e0e0' }}>Sovereign</h3>
-            <p style={{ color: '#a1a1aa', lineHeight: '1.6' }}>
-              Own your stack. Build and deploy on your terms, your way.
-            </p>
-          </div>
-        </div>
-
-        <div style={{
-          marginBottom: '3rem',
-          padding: '3rem',
-          backgroundColor: 'rgba(102, 126, 234, 0.05)',
-          borderRadius: '12px',
-          border: '1px solid rgba(102, 126, 234, 0.2)'
-        }}>
-          <h2 style={{
-            fontSize: '2.5rem',
-            textAlign: 'center',
-            marginBottom: '1rem',
-            color: '#e0e0e0'
-          }}>
-            Simple Pricing
-          </h2>
-          <p style={{
-            fontSize: '1.125rem',
-            textAlign: 'center',
-            color: '#a1a1aa',
-            marginBottom: '3rem'
-          }}>
-            Get started with BlackRoad OS Professional
-          </p>
-
-          <div style={{
-            maxWidth: '400px',
-            margin: '0 auto',
-            padding: '2.5rem',
-            backgroundColor: 'rgba(26, 26, 26, 0.8)',
-            borderRadius: '12px',
-            border: '1px solid rgba(102, 126, 234, 0.3)',
-            textAlign: 'center'
-          }}>
-            <h3 style={{
-              fontSize: '1.5rem',
-              marginBottom: '1rem',
-              color: '#667eea'
-            }}>
-              Professional
-            </h3>
-            <div style={{
-              fontSize: '3rem',
-              fontWeight: 700,
-              marginBottom: '0.5rem',
-              color: '#e0e0e0'
-            }}>
-              $97<span style={{ fontSize: '1.5rem', color: '#888' }}>/mo</span>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '3rem' }}>
+          {!user ? (
+            <>
+              <button onClick={handleSignIn} style={{ padding: '1rem 2.5rem', fontSize: '1.125rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: 700, boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)', transform: 'translateY(0)', transition: 'all 0.3s' }}>Sign In</button>
+              <button onClick={handleSignIn} style={{ padding: '1rem 2.5rem', fontSize: '1.125rem', background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: 700, boxShadow: '0 4px 15px rgba(240, 147, 251, 0.4)' }}>Get Started</button>
+            </>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem 2rem', background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', borderRadius: '12px', boxShadow: '0 4px 15px rgba(168, 237, 234, 0.3)' }}>
+              <span style={{ color: '#4a148c', fontWeight: 700 }}>👋 Welcome, {user.name}!</span>
+              <button onClick={handleSignOut} style={{ padding: '0.5rem 1rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 600 }}>Sign Out</button>
             </div>
-            <p style={{
-              color: '#a1a1aa',
-              marginBottom: '2rem'
-            }}>
-              Full access to BlackRoad OS infrastructure
-            </p>
-            <ul style={{
-              textAlign: 'left',
-              listStyle: 'none',
-              padding: 0,
-              marginBottom: '2rem'
-            }}>
-              <li style={{ padding: '0.5rem 0', color: '#a1a1aa' }}>✓ Unlimited deployments</li>
-              <li style={{ padding: '0.5rem 0', color: '#a1a1aa' }}>✓ 24/7 infrastructure access</li>
-              <li style={{ padding: '0.5rem 0', color: '#a1a1aa' }}>✓ Priority support</li>
-              <li style={{ padding: '0.5rem 0', color: '#a1a1aa' }}>✓ Advanced monitoring</li>
+          )}
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
+          <div style={{ padding: '2rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderRadius: '16px', color: 'white', boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎯</div>
+            <h3 style={{ fontSize: '1.5rem', marginBottom: '0.75rem', fontWeight: 800 }}>Operator-Controlled</h3>
+            <p style={{ opacity: 0.95, lineHeight: '1.6', fontSize: '1.05rem' }}>Full control over your infrastructure. No black boxes, no vendor lock-in.</p>
+          </div>
+          <div style={{ padding: '2rem', background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', borderRadius: '16px', color: 'white', boxShadow: '0 8px 25px rgba(240, 147, 251, 0.3)' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔒</div>
+            <h3 style={{ fontSize: '1.5rem', marginBottom: '0.75rem', fontWeight: 800 }}>Local-First</h3>
+            <p style={{ opacity: 0.95, lineHeight: '1.6', fontSize: '1.05rem' }}>Your data stays on your hardware. Privacy and security by design.</p>
+          </div>
+          <div style={{ padding: '2rem', background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', borderRadius: '16px', color: 'white', boxShadow: '0 8px 25px rgba(79, 172, 254, 0.3)' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚡</div>
+            <h3 style={{ fontSize: '1.5rem', marginBottom: '0.75rem', fontWeight: 800 }}>Sovereign</h3>
+            <p style={{ opacity: 0.95, lineHeight: '1.6', fontSize: '1.05rem' }}>Own your stack. Build and deploy on your terms, your way.</p>
+          </div>
+        </div>
+
+        <div style={{ marginBottom: '3rem', padding: '3rem', background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)', borderRadius: '20px', boxShadow: '0 8px 25px rgba(252, 182, 159, 0.3)' }}>
+          <h2 style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '1rem', background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 900 }}>Simple Pricing</h2>
+          <p style={{ fontSize: '1.25rem', textAlign: 'center', color: '#8b4513', marginBottom: '3rem', fontWeight: 600 }}>Get started with BlackRoad OS Professional</p>
+          <div style={{ maxWidth: '400px', margin: '0 auto', padding: '2.5rem', background: 'white', borderRadius: '16px', boxShadow: '0 12px 40px rgba(0,0,0,0.15)', textAlign: 'center' }}>
+            <h3 style={{ fontSize: '1.75rem', marginBottom: '1rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 800 }}>Professional</h3>
+            <div style={{ fontSize: '4rem', fontWeight: 900, marginBottom: '0.5rem', background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>$97<span style={{ fontSize: '1.5rem', color: '#999' }}>/mo</span></div>
+            <p style={{ color: '#666', marginBottom: '2rem', fontSize: '1.05rem' }}>Full access to BlackRoad OS infrastructure</p>
+            <ul style={{ textAlign: 'left', listStyle: 'none', padding: 0, marginBottom: '2rem' }}>
+              <li style={{ padding: '0.75rem 0', color: '#333', fontSize: '1.05rem', fontWeight: 600 }}>✓ Unlimited deployments</li>
+              <li style={{ padding: '0.75rem 0', color: '#333', fontSize: '1.05rem', fontWeight: 600 }}>✓ 24/7 infrastructure access</li>
+              <li style={{ padding: '0.75rem 0', color: '#333', fontSize: '1.05rem', fontWeight: 600 }}>✓ Priority support</li>
+              <li style={{ padding: '0.75rem 0', color: '#333', fontSize: '1.05rem', fontWeight: 600 }}>✓ Advanced monitoring</li>
             </ul>
-            <button
-              onClick={handleCheckout}
-              style={{
-                width: '100%',
-                padding: '1rem 2rem',
-                fontSize: '1.125rem',
-                backgroundColor: '#667eea',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontWeight: 600,
-                transition: 'all 0.2s'
-              }}
-            >
-              Subscribe Now
-            </button>
+            <Link href={user ? '/checkout' : '#'} onClick={(e) => !user && e.preventDefault()}>
+              <button disabled={!user} style={{ width: '100%', padding: '1.25rem 2rem', fontSize: '1.25rem', background: user ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : '#ccc', color: 'white', border: 'none', borderRadius: '12px', cursor: user ? 'pointer' : 'not-allowed', fontWeight: 800, boxShadow: user ? '0 6px 20px rgba(102, 126, 234, 0.4)' : 'none' }}>
+                {user ? 'Subscribe Now 🚀' : 'Sign In to Subscribe'}
+              </button>
+            </Link>
           </div>
         </div>
 
-        <div style={{
-          padding: '1.5rem',
-          backgroundColor: '#0f0f0f',
-          borderRadius: '8px',
-          border: '1px solid #2a2a2a',
-          marginBottom: '2rem'
-        }}>
-          <h3 style={{
-            fontSize: '1rem',
-            marginBottom: '1rem',
-            color: '#667eea'
-          }}>
-            Service Status Dashboard
-          </h3>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '1rem'
-          }}>
-            <div>
-              <div style={{ color: '#888', fontSize: '0.75rem', marginBottom: '0.25rem' }}>SERVICE</div>
-              <div style={{ fontSize: '1rem', fontWeight: 500 }}>Web Platform</div>
-            </div>
-            <div>
-              <div style={{ color: '#888', fontSize: '0.75rem', marginBottom: '0.25rem' }}>STATUS</div>
-              <div style={{ fontSize: '1rem', fontWeight: 500, color: '#4ade80' }}>Operational</div>
-            </div>
-            <div>
-              <div style={{ color: '#888', fontSize: '0.75rem', marginBottom: '0.25rem' }}>VERSION</div>
-              <div style={{ fontSize: '1rem', fontWeight: 500 }}>0.0.1</div>
-            </div>
-          </div>
-        </div>
-
-        <div style={{
-          display: 'grid',
-          gap: '1rem',
-          marginTop: '2rem'
-        }}>
-          <h2 style={{
-            fontSize: '1.25rem',
-            marginBottom: '0.5rem',
-            color: '#e0e0e0'
-          }}>
-            Service Endpoints
-          </h2>
-
-          <a
-            href="/api/health"
-            style={{
-              display: 'block',
-              padding: '1rem',
-              backgroundColor: '#2a2a2a',
-              borderRadius: '6px',
-              border: '1px solid #444',
-              textDecoration: 'none',
-              color: '#667eea',
-              transition: 'all 0.2s'
-            }}
-          >
-            <strong>/api/health</strong>
-            <span style={{ color: '#888', marginLeft: '1rem' }}>→ Health check endpoint</span>
-          </a>
-
-          <a
-            href="/api/version"
-            style={{
-              display: 'block',
-              padding: '1rem',
-              backgroundColor: '#2a2a2a',
-              borderRadius: '6px',
-              border: '1px solid #444',
-              textDecoration: 'none',
-              color: '#667eea',
-              transition: 'all 0.2s'
-            }}
-          >
-            <strong>/api/version</strong>
-            <span style={{ color: '#888', marginLeft: '1rem' }}>→ Version information</span>
-          </a>
-
-          <a
-            href="/api/ready"
-            style={{
-              display: 'block',
-              padding: '1rem',
-              backgroundColor: '#2a2a2a',
-              borderRadius: '6px',
-              border: '1px solid #444',
-              textDecoration: 'none',
-              color: '#667eea',
-              transition: 'all 0.2s'
-            }}
-          >
-            <strong>/api/ready</strong>
-            <span style={{ color: '#888', marginLeft: '1rem' }}>→ Readiness probe</span>
-          </a>
-        </div>
-
-        <footer style={{
-          marginTop: '3rem',
-          paddingTop: '1.5rem',
-          borderTop: '1px solid #333',
-          fontSize: '0.875rem',
-          color: '#666',
-          textAlign: 'center'
-        }}>
+        <footer style={{ marginTop: '3rem', paddingTop: '1.5rem', borderTop: '2px solid #eee', fontSize: '0.875rem', color: '#999', textAlign: 'center', fontWeight: 600 }}>
           BlackRoad Infrastructure · {new Date().getFullYear()}
         </footer>
       </div>
