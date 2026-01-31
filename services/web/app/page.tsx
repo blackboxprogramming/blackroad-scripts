@@ -84,6 +84,43 @@ export default function Home() {
           </div>
         </div>
 
+        <div style={{ marginTop: '3rem', padding: '2rem', background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', borderRadius: '16px', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '2rem', marginBottom: '1rem', color: '#4a148c', fontWeight: 800 }}>Stay Updated</h2>
+          <p style={{ color: '#6a1b9a', marginBottom: '1.5rem', fontSize: '1.05rem' }}>Get the latest updates and insights delivered to your inbox</p>
+          <div style={{ display: 'flex', gap: '0.5rem', maxWidth: '500px', margin: '0 auto' }}>
+            <input
+              type="email"
+              placeholder="your@email.com"
+              id="newsletter-email"
+              style={{ flex: 1, padding: '1rem', borderRadius: '8px', border: '2px solid #667eea', fontSize: '1rem' }}
+            />
+            <button
+              onClick={() => {
+                const input = document.getElementById('newsletter-email') as HTMLInputElement
+                if (input.value) {
+                  fetch('/api/newsletter', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: input.value })
+                  }).then(() => {
+                    alert('✅ Subscribed successfully!')
+                    input.value = ''
+                  })
+                }
+              }}
+              style={{ padding: '1rem 2rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 700, fontSize: '1rem' }}
+            >
+              Subscribe
+            </button>
+          </div>
+        </div>
+
+        <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+          <Link href="/dashboard" style={{ display: 'inline-block', padding: '1rem 2rem', background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', color: 'white', borderRadius: '12px', textDecoration: 'none', fontWeight: 700, boxShadow: '0 4px 15px rgba(79, 172, 254, 0.4)' }}>
+            📊 View System Dashboard
+          </Link>
+        </div>
+
         <footer style={{ marginTop: '3rem', paddingTop: '1.5rem', borderTop: '2px solid #eee', fontSize: '0.875rem', color: '#999', textAlign: 'center', fontWeight: 600 }}>
           BlackRoad Infrastructure · {new Date().getFullYear()}
         </footer>
