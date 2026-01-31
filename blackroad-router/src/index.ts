@@ -8,13 +8,15 @@ interface Env {
 }
 
 const ROUTES: Record<string, string> = {
-  'blackroad.io': 'https://web-9to8ea8bw-alexa-amundsons-projects.vercel.app',
-  'www.blackroad.io': 'https://web-9to8ea8bw-alexa-amundsons-projects.vercel.app',
+  'blackroad.io': 'https://web-meixvgif8-alexa-amundsons-projects.vercel.app',
+  'www.blackroad.io': 'https://web-meixvgif8-alexa-amundsons-projects.vercel.app',
   'app.blackroad.io': 'https://blackroad-console.pages.dev',
   'docs.blackroad.io': 'https://blackroad-os-docs.pages.dev',
   'demo.blackroad.io': 'https://blackroad-os-demo.pages.dev',
   'home.blackroad.io': 'https://blackroad-os-home.pages.dev',
   'brand.blackroad.io': 'https://blackroad-os-brand.pages.dev',
+  'api.blackroad.io': 'https://web-meixvgif8-alexa-amundsons-projects.vercel.app',
+  'status.blackroad.io': 'https://web-meixvgif8-alexa-amundsons-projects.vercel.app',
 };
 
 export default {
