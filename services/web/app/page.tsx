@@ -115,6 +115,55 @@ export default function Home() {
           </div>
         </div>
 
+        <div style={{ marginTop: '3rem', padding: '3rem', background: 'white', borderRadius: '20px', boxShadow: '0 8px 25px rgba(0,0,0,0.15)' }}>
+          <h2 style={{ fontSize: '2.5rem', textAlign: 'center', marginBottom: '2rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 900 }}>
+            What Our Users Say
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+            <div style={{ padding: '2rem', background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%)', borderRadius: '12px' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⭐⭐⭐⭐⭐</div>
+              <p style={{ fontSize: '1.05rem', marginBottom: '1rem', color: '#333', lineHeight: '1.6' }}>
+                "BlackRoad OS gave us full control over our infrastructure. No vendor lock-in!"
+              </p>
+              <div style={{ fontWeight: 700, color: '#667eea' }}>— Sarah Chen, CTO</div>
+            </div>
+            <div style={{ padding: '2rem', background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 50%)', borderRadius: '12px' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⭐⭐⭐⭐⭐</div>
+              <p style={{ fontSize: '1.05rem', marginBottom: '1rem', color: '#333', lineHeight: '1.6' }}>
+                "Local-first architecture means our data never leaves our servers. Perfect for compliance."
+              </p>
+              <div style={{ fontWeight: 700, color: '#f093fb' }}>— Marcus Rodriguez, VP Engineering</div>
+            </div>
+            <div style={{ padding: '2rem', background: 'linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 50%)', borderRadius: '12px' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⭐⭐⭐⭐⭐</div>
+              <p style={{ fontSize: '1.05rem', marginBottom: '1rem', color: '#333', lineHeight: '1.6' }}>
+                "Deployed in minutes. Running for months. Zero downtime. This is how infrastructure should be."
+              </p>
+              <div style={{ fontWeight: 700, color: '#4facfe' }}>— Alex Thompson, DevOps Lead</div>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ marginTop: '3rem', padding: '3rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderRadius: '20px', color: 'white' }}>
+          <h2 style={{ fontSize: '2.5rem', textAlign: 'center', marginBottom: '2rem', fontWeight: 900 }}>
+            Frequently Asked Questions
+          </h2>
+          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+            <div style={{ marginBottom: '2rem', padding: '1.5rem', background: 'rgba(255,255,255,0.1)', borderRadius: '12px', backdropFilter: 'blur(10px)' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.75rem' }}>What makes BlackRoad OS different?</h3>
+              <p style={{ opacity: 0.95, lineHeight: '1.6' }}>Complete sovereignty. You own your hardware, your data, your infrastructure. No cloud lock-in, no vendor dependencies.</p>
+            </div>
+            <div style={{ marginBottom: '2rem', padding: '1.5rem', background: 'rgba(255,255,255,0.1)', borderRadius: '12px', backdropFilter: 'blur(10px)' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.75rem' }}>Can I deploy on my own hardware?</h3>
+              <p style={{ opacity: 0.95, lineHeight: '1.6' }}>Absolutely! BlackRoad OS runs on Raspberry Pi, bare metal servers, VMs, or any Linux-compatible hardware.</p>
+            </div>
+            <div style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.1)', borderRadius: '12px', backdropFilter: 'blur(10px)' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.75rem' }}>What about support?</h3>
+              <p style={{ opacity: 0.95, lineHeight: '1.6' }}>Professional plan includes 24/7 support, priority updates, and direct access to our engineering team.</p>
+            </div>
+          </div>
+        </div>
+
         <div style={{ marginTop: '2rem', textAlign: 'center' }}>
           <Link href="/dashboard" style={{ display: 'inline-block', padding: '1rem 2rem', background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', color: 'white', borderRadius: '12px', textDecoration: 'none', fontWeight: 700, boxShadow: '0 4px 15px rgba(79, 172, 254, 0.4)' }}>
             📊 View System Dashboard
