@@ -1,26 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useUser, SignInButton, UserButton } from '@clerk/nextjs'
 
 export default function Home() {
-  const [user, setUser] = useState<any>(null)
-
-  useEffect(() => {
-    const savedUser = localStorage.getItem('demo_user')
-    if (savedUser) setUser(JSON.parse(savedUser))
-  }, [])
-
-  const handleSignIn = () => {
-    const demoUser = { email: 'demo@blackroad.io', name: 'Demo User' }
-    localStorage.setItem('demo_user', JSON.stringify(demoUser))
-    setUser(demoUser)
-  }
-
-  const handleSignOut = () => {
-    localStorage.removeItem('demo_user')
-    setUser(null)
-  }
+  const { user, isSignedIn, isLoaded } = useUser()
 
   return (
     <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%)', position: 'relative' }}>
@@ -32,15 +16,21 @@ export default function Home() {
         <p style={{ fontSize: '1.5rem', textAlign: 'center', color: '#667eea', marginBottom: '2rem', fontWeight: 600 }}>Operator-controlled • Local-first • Sovereign</p>
 
         <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '3rem' }}>
-          {!user ? (
+          {!isLoaded ? (
+            <div style={{ padding: '1rem 2rem', color: '#667eea', fontWeight: 600 }}>Loading...</div>
+          ) : !isSignedIn ? (
             <>
-              <button onClick={handleSignIn} style={{ padding: '1rem 2.5rem', fontSize: '1.125rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: 700, boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)', transform: 'translateY(0)', transition: 'all 0.3s' }}>Sign In</button>
-              <button onClick={handleSignIn} style={{ padding: '1rem 2.5rem', fontSize: '1.125rem', background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: 700, boxShadow: '0 4px 15px rgba(240, 147, 251, 0.4)' }}>Get Started</button>
+              <SignInButton mode="modal">
+                <button style={{ padding: '1rem 2.5rem', fontSize: '1.125rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: 700, boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)', transform: 'translateY(0)', transition: 'all 0.3s' }}>Sign In</button>
+              </SignInButton>
+              <SignInButton mode="modal">
+                <button style={{ padding: '1rem 2.5rem', fontSize: '1.125rem', background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: 700, boxShadow: '0 4px 15px rgba(240, 147, 251, 0.4)' }}>Get Started</button>
+              </SignInButton>
             </>
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem 2rem', background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', borderRadius: '12px', boxShadow: '0 4px 15px rgba(168, 237, 234, 0.3)' }}>
-              <span style={{ color: '#4a148c', fontWeight: 700 }}>👋 Welcome, {user.name}!</span>
-              <button onClick={handleSignOut} style={{ padding: '0.5rem 1rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 600 }}>Sign Out</button>
+              <span style={{ color: '#4a148c', fontWeight: 700 }}>👋 Welcome, {user?.firstName || user?.emailAddresses[0]?.emailAddress}!</span>
+              <UserButton afterSignOutUrl="/" />
             </div>
           )}
         </div>
