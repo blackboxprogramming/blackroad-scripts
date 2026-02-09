@@ -1,0 +1,11 @@
+name = "blackroad-llm-api"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+[vars]
+CLUSTER_URL = "https://llm.blackroad.io"
+
+# Routes
+# routes = [
+#   { pattern = "blackroad.io/api/llm/*", zone_name = "blackroad.io" }
+# ]
