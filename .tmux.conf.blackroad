@@ -1,0 +1,56 @@
+# BlackRoad tmux Theme
+# ====================
+# Add to ~/.tmux.conf or source directly:
+#   tmux source-file ~/.tmux.conf.blackroad
+
+# Enable 256 colors
+set -g default-terminal "screen-256color"
+
+# Status bar position
+set -g status-position bottom
+
+# Status bar colors (BLACK background, ORANGE foreground)
+set -g status-style "bg=colour0,fg=colour208"
+
+# Status bar left side
+set -g status-left-length 40
+set -g status-left "#[fg=colour33,bold]▣ #S #[fg=colour208]│ "
+
+# Status bar right side
+set -g status-right-length 60
+set -g status-right "#[fg=colour163]%H:%M #[fg=colour208]│ #[fg=colour198]%Y-%m-%d "
+
+# Window status format
+setw -g window-status-format " #[fg=colour163]#I:#W "
+setw -g window-status-current-format " #[fg=colour33,bold]#I:#W "
+
+# Window status separator
+setw -g window-status-separator "#[fg=colour202]│"
+
+# Pane borders
+set -g pane-border-style "fg=colour198"
+set -g pane-active-border-style "fg=colour208,bold"
+
+# Pane numbers (prefix + q)
+set -g display-panes-colour colour163
+set -g display-panes-active-colour colour208
+
+# Message text (command line)
+set -g message-style "bg=colour0,fg=colour208,bold"
+
+# Command mode
+set -g message-command-style "bg=colour0,fg=colour33"
+
+# Clock mode (prefix + t)
+setw -g clock-mode-colour colour33
+setw -g clock-mode-style 24
+
+# Activity/bell indicators
+setw -g window-status-activity-style "fg=colour202,bold"
+setw -g window-status-bell-style "fg=colour198,bold,blink"
+
+# Copy mode
+setw -g mode-style "bg=colour33,fg=colour0,bold"
+
+# BlackRoad OS branding
+set -g status-left "#[fg=colour208,bold]▣ BR #[fg=colour163]│ #[fg=colour33]#S "
