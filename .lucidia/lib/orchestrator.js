@@ -34,14 +34,20 @@ class Orchestrator {
     };
   }
 
-  // Execute task with single model
-  async executeTask(prompt, modelName = null) {
+  // Execute task with single model (with streaming support)
+  async executeTask(prompt, modelName = null, stream = false, onChunk = null) {
     const model = modelName || this.config.get('default_model');
     const modelConfig = this.config.getModel(modelName || 'code');
 
     const startTime = Date.now();
 
     try {
+      if (stream && onChunk) {
+        // Streaming mode
+        return await this.executeStreaming(prompt, modelConfig ? modelConfig.name : model, onChunk);
+      }
+
+      // Non-streaming mode (original)
       const response = await axios.post(`${OLLAMA_API}/api/generate`, {
         model: modelConfig ? modelConfig.name : model,
         prompt: prompt,
@@ -163,3 +169,49 @@ class Orchestrator {
 }
 
 module.exports = Orchestrator;
+
+  // Execute with streaming (character-by-character output)
+  async executeStreaming(prompt, modelName, onChunk) {
+    return new Promise(async (resolve, reject) => {
+      const startTime = Date.now();
+      let fullResponse = '';
+      
+      try {
+        const response = await axios.post(`${OLLAMA_API}/api/generate`, {
+          model: modelName,
+          prompt: prompt,
+          stream: true,
+        }, {
+          responseType: 'stream'
+        });
+
+        response.data.on('data', (chunk) => {
+          try {
+            const lines = chunk.toString().split('\n').filter(line => line.trim());
+            for (const line of lines) {
+              const data = JSON.parse(line);
+              if (data.response) {
+                fullResponse += data.response;
+                onChunk(data.response); // Send each character to callback
+              }
+              if (data.done) {
+                const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+                resolve({
+                  model: modelName,
+                  response: fullResponse,
+                  time: duration,
+                  tokens: data.eval_count || fullResponse.split(' ').length
+                });
+              }
+            }
+          } catch (e) {
+            // Skip invalid JSON chunks
+          }
+        });
+
+        response.data.on('error', reject);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }

@@ -1,35 +1,34 @@
 # Lucidia v2.0 Configuration
-# Auto-generated on first run
 
 version: "2.0.0"
 
 # Daemon settings
 daemon:
-  enabled: true
-  port: 11435
   host: localhost
+  port: 11435
+  log_file: ~/.lucidia/daemon.log
+  pid_file: ~/.lucidia/daemon.pid
   auto_start: true
-  log_level: info
 
-# Default model
-default_model: qwen2.5-coder:7b
+# Default model (used when no routing match)
+default_model: qwen2.5:0.5b
 
-# Model pool
+# Model pool (optimized for MAXIMUM speed!)
 models:
   fast:
-    name: qwen2.5:1.5b
+    name: qwen2.5:0.5b
     purpose: autocomplete, quick tasks, simple questions
     max_tokens: 2048
   code:
-    name: qwen2.5-coder:7b
+    name: qwen2.5:0.5b
     purpose: coding, refactoring, code generation
     max_tokens: 4096
   smart:
-    name: qwen2.5:latest
+    name: llama3.2:1b
     purpose: reasoning, analysis, architecture
-    max_tokens: 8192
+    max_tokens: 4096
   review:
-    name: llama3.2:3b
+    name: llama3.2:1b
     purpose: code review, quality checks
     max_tokens: 2048
 
@@ -38,58 +37,36 @@ multi_model:
   enabled: true
   display: side-by-side  # side-by-side | sequential | tabs
   parallel: true
-  timeout: 60
+  default_models:
+    - code
+    - review
 
-# Context settings
+# Context detection
 context:
-  git: true
-  files: true
-  codex: true
-  memory: true
-  auto_detect: true
-  max_files: 10
-  max_history: 50
-
-# Memory settings
-memory:
-  sessions: true
-  patterns: true
-  learn_preferences: true
-  retention_days: 90
-
-# Integration
-integrations:
-  blackroad_memory: true
-  blackroad_codex: true
-  aider: true
-
-# Web UI
-web:
   enabled: true
-  port: 8080
-  auto_open: false
-  theme: dark
+  detect_git: true
+  detect_files: true
+  detect_framework: true
+  include_recent_commits: 5
+  max_file_scan: 100
 
-# Modes configuration
-modes:
-  chat:
-    model: code
-    context: full
-  task:
-    models: [code, review]  # Multiple models
-    context: minimal
-  analyze:
-    model: smart
-    context: full
-  review:
-    models: [review, smart]
-    context: file
-  debug:
-    models: [code, smart]
-    context: full
-  test:
-    model: code
-    context: file
-  docs:
-    model: smart
-    context: minimal
+# Memory system
+memory:
+  enabled: true
+  session_dir: ~/.lucidia/memory/sessions
+  pattern_file: ~/.lucidia/memory/patterns.json
+  preferences_file: ~/.lucidia/memory/preferences.json
+  retention_days: 90
+  auto_save: true
+
+# Codex integration
+codex:
+  enabled: true
+  search_script: ~/blackroad-codex-search.py
+  max_results: 5
+
+# BlackRoad memory integration
+blackroad_memory:
+  enabled: true
+  script: ~/memory-system.sh
+  auto_log: true

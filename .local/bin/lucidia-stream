@@ -1,0 +1,19 @@
+#!/bin/bash
+# Lucidia Streaming Mode - Fast typing effect!
+
+MODEL="${1:-qwen2.5:0.5b}"
+PROMPT="${2:-Say hello}"
+
+echo -e "\033[0;36m⚡ Streaming with $MODEL...\033[0m\n"
+
+curl -X POST http://localhost:11434/api/generate \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"model\": \"$MODEL\",
+    \"prompt\": \"$PROMPT\",
+    \"stream\": true
+  }" 2>/dev/null | while IFS= read -r line; do
+    echo "$line" | jq -r '.response // empty' | tr -d '\n'
+  done
+
+echo -e "\n\n✅ Done!"

@@ -41,28 +41,33 @@ get_context() {
   node -e "const C=require('./lib/context'); new C().detect().then(c=>console.log(new C().format(c)))" 2>/dev/null || echo ""
 }
 
-# Execute task with single model
+# Execute task with single model (STREAMING MODE!)
 execute_task() {
   local prompt="$1"
   local model="${2:-code}"
   
-  echo -e "${CYAN}Executing with ${model} model...${NC}\n"
+  echo -e "${CYAN}⚡ Streaming with ${model} model...${NC}\n"
   
-  response=$(curl -s -X POST "$DAEMON_API/api/task" \
+  # Get model name from config
+  local model_name=$(cd "$LUCIDIA_DIR" && node -e "const C=require('./lib/config'); const c=new C(); console.log(c.getModel('$model').name)" 2>/dev/null || echo "qwen2.5:0.5b")
+  
+  local start_time=$(date +%s.%N)
+  
+  # Stream the response (typing effect!)
+  curl -X POST http://localhost:11434/api/generate \
     -H "Content-Type: application/json" \
-    -d "{\"prompt\":\"$prompt\",\"model\":\"$model\"}")
+    -d "{
+      \"model\": \"$model_name\",
+      \"prompt\": \"$prompt\",
+      \"stream\": true
+    }" 2>/dev/null | while IFS= read -r line; do
+      echo "$line" | jq -r '.response // empty' | tr -d '\n'
+    done
   
-  # Parse and display
-  echo "$response" | node -e "
-    const data = JSON.parse(require('fs').readFileSync(0, 'utf8'));
-    if (data.error) {
-      console.log('Error:', data.error);
-    } else {
-      console.log(data.response);
-      console.log('');
-      console.log('Model:', data.model, '• Time:', data.time + 's', '• Tokens:', data.tokens);
-    }
-  "
+  local end_time=$(date +%s.%N)
+  local duration=$(echo "$end_time - $start_time" | bc)
+  
+  echo -e "\n\n${GREEN}Model: $model_name • Time: ${duration}s${NC}\n"
 }
 
 # Execute with multiple models (collaboration)
