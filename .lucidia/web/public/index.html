@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lucidia v2.0 - Multi-Model Coding Assistant</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <h1>🦙 Lucidia v2.0</h1>
+      <p class="subtitle">Multi-Model Coding Assistant • Index-First • Local</p>
+    </div>
+    <div class="header-status">
+      <span id="status" class="status-indicator">●</span>
+      <span id="status-text">Connected</span>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <h3>🤖 Models</h3>
+        <ul id="model-list" class="model-list">
+          <li><span class="model-dot" style="background: #3b82f6"></span> Fast (1.5b)</li>
+          <li><span class="model-dot" style="background: #10b981"></span> Code (7b)</li>
+          <li><span class="model-dot" style="background: #8b5cf6"></span> Smart (7b)</li>
+          <li><span class="model-dot" style="background: #f59e0b"></span> Review (3b)</li>
+        </ul>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>📚 Recent Sessions</h3>
+        <ul id="session-list" class="session-list">
+          <li class="loading">Loading...</li>
+        </ul>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>⚙️ Settings</h3>
+        <label class="setting">
+          <input type="checkbox" id="parallel-mode" checked>
+          <span>Parallel Execution</span>
+        </label>
+        <label class="setting">
+          <input type="checkbox" id="auto-save" checked>
+          <span>Auto-save Sessions</span>
+        </label>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Input Area -->
+      <div class="input-area">
+        <textarea 
+          id="prompt" 
+          placeholder="Describe your coding task... (e.g., 'Create a function to validate email addresses')"
+          rows="4"
+        ></textarea>
+        <div class="input-controls">
+          <button id="execute-btn" class="btn btn-primary">
+            🚀 Execute
+          </button>
+          <button id="clear-btn" class="btn btn-secondary">
+            Clear
+          </button>
+          <select id="mode-select" class="mode-select">
+            <option value="collab">Multi-Model (Recommended)</option>
+            <option value="fast">Fast Model Only</option>
+            <option value="code">Code Model Only</option>
+            <option value="smart">Smart Model Only</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Results Area -->
+      <div id="results" class="results">
+        <div class="empty-state">
+          <h2>👋 Welcome to Lucidia</h2>
+          <p>Enter a coding task above to see multiple AI models collaborate on the solution.</p>
+          <p class="help-text">
+            💡 Try: "Write a function to check if a string is a palindrome"
+          </p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
