@@ -1,0 +1,102 @@
+name: Auto Deploy + DNS
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      domain:
+        description: 'Custom domain (e.g., app.blackroad.io)'
+        required: false
+      project:
+        description: 'Cloudflare Pages project name'
+        required: false
+
+env:
+  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+  CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci || npm install || echo "No package.json"
+
+      - name: Build
+        run: |
+          if [ -f "package.json" ]; then
+            npm run build || echo "No build script"
+          fi
+
+      - name: Detect output directory
+        id: detect
+        run: |
+          if [ -d "dist" ]; then
+            echo "dir=dist" >> $GITHUB_OUTPUT
+          elif [ -d "build" ]; then
+            echo "dir=build" >> $GITHUB_OUTPUT
+          elif [ -d "out" ]; then
+            echo "dir=out" >> $GITHUB_OUTPUT
+          elif [ -d "public" ]; then
+            echo "dir=public" >> $GITHUB_OUTPUT
+          else
+            echo "dir=." >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy to Cloudflare Pages
+        id: deploy
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: ${{ github.event.inputs.project || github.event.repository.name }}
+          directory: ${{ steps.detect.outputs.dir }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update DNS (if custom domain provided)
+        if: github.event.inputs.domain != ''
+        run: |
+          DOMAIN="${{ github.event.inputs.domain }}"
+          PROJECT="${{ github.event.inputs.project || github.event.repository.name }}"
+
+          # Extract zone from domain (last 2 parts)
+          ZONE=$(echo "$DOMAIN" | rev | cut -d. -f1-2 | rev)
+
+          # Get zone ID
+          ZONE_ID=$(curl -s "https://api.cloudflare.com/client/v4/zones?name=$ZONE" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" | jq -r '.result[0].id')
+
+          # Check if record exists
+          EXISTING=$(curl -s "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?name=$DOMAIN&type=CNAME" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" | jq -r '.result[0].id')
+
+          if [ "$EXISTING" != "null" ] && [ -n "$EXISTING" ]; then
+            # Update
+            curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$EXISTING" \
+              -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+              -H "Content-Type: application/json" \
+              --data "{\"type\":\"CNAME\",\"name\":\"$DOMAIN\",\"content\":\"${PROJECT}.pages.dev\",\"proxied\":true}"
+          else
+            # Create
+            curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
+              -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+              -H "Content-Type: application/json" \
+              --data "{\"type\":\"CNAME\",\"name\":\"$DOMAIN\",\"content\":\"${PROJECT}.pages.dev\",\"proxied\":true}"
+          fi
+
+      - name: Summary
+        run: |
+          echo "## Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL:** ${{ steps.deploy.outputs.url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Project:** ${{ github.event.inputs.project || github.event.repository.name }}" >> $GITHUB_STEP_SUMMARY
+          if [ -n "${{ github.event.inputs.domain }}" ]; then
+            echo "- **Custom Domain:** https://${{ github.event.inputs.domain }}" >> $GITHUB_STEP_SUMMARY
+          fi

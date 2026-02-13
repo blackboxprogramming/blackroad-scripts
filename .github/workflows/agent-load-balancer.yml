@@ -1,0 +1,266 @@
+name: Agent Load Balancing Monitor
+
+on:
+  # Run every hour
+  schedule:
+    - cron: '0 * * * *'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  check-agent-load:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Query Agent Workload
+        id: check-load
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const query = `
+              query($org: String!, $projectNumber: Int!) {
+                organization(login: $org) {
+                  projectV2(number: $projectNumber) {
+                    items(first: 100) {
+                      nodes {
+                        id
+                        content {
+                          ... on Issue {
+                            number
+                            title
+                            url
+                          }
+                        }
+                        fieldValues(first: 20) {
+                          nodes {
+                            ... on ProjectV2ItemFieldTextValue {
+                              text
+                              field {
+                                ... on ProjectV2Field {
+                                  name
+                                }
+                              }
+                            }
+                            ... on ProjectV2ItemFieldSingleSelectValue {
+                              name
+                              field {
+                                ... on ProjectV2SingleSelectField {
+                                  name
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+            
+            try {
+              const result = await github.graphql(query, {
+                org: 'BlackRoad-OS',
+                projectNumber: 9
+              });
+              
+              const items = result.organization.projectV2.items.nodes;
+              const agentLoad = new Map();
+              
+              for (const item of items) {
+                let agent = null;
+                let state = null;
+                let priority = null;
+                let effort = null;
+                
+                for (const fieldValue of item.fieldValues.nodes) {
+                  if (fieldValue.field?.name === 'Agent') {
+                    agent = fieldValue.text;
+                  } else if (fieldValue.field?.name === 'State') {
+                    state = fieldValue.name;
+                  } else if (fieldValue.field?.name === 'Priority') {
+                    priority = fieldValue.name;
+                  } else if (fieldValue.field?.name === 'Effort') {
+                    effort = fieldValue.name;
+                  }
+                }
+                
+                // Only count active workflows
+                if (state === 'Active' && agent) {
+                  if (!agentLoad.has(agent)) {
+                    agentLoad.set(agent, {
+                      count: 0,
+                      workflows: [],
+                      totalEffort: 0,
+                      highPriority: 0
+                    });
+                  }
+                  
+                  const load = agentLoad.get(agent);
+                  load.count++;
+                  load.workflows.push({
+                    issue: item.content?.number,
+                    title: item.content?.title,
+                    url: item.content?.url,
+                    priority,
+                    effort
+                  });
+                  
+                  // Calculate effort score
+                  const effortMap = {
+                    'XS (< 1h)': 1,
+                    'S (1-4h)': 2,
+                    'M (1-2d)': 5,
+                    'L (3-5d)': 10,
+                    'XL (1-2w)': 20,
+                    'XXL (> 2w)': 40
+                  };
+                  load.totalEffort += effortMap[effort] || 0;
+                  
+                  if (priority && priority.includes('Critical') || priority.includes('High')) {
+                    load.highPriority++;
+                  }
+                }
+              }
+              
+              // Identify overloaded agents
+              const overloaded = [];
+              const LOAD_THRESHOLD = 5; // workflows
+              const EFFORT_THRESHOLD = 30; // effort points
+              
+              for (const [agent, load] of agentLoad.entries()) {
+                if (load.count >= LOAD_THRESHOLD || load.totalEffort >= EFFORT_THRESHOLD) {
+                  overloaded.push({
+                    agent,
+                    ...load,
+                    reason: load.count >= LOAD_THRESHOLD ? 'Too many workflows' : 'High effort total'
+                  });
+                }
+              }
+              
+              // Generate report
+              const report = {
+                timestamp: new Date().toISOString(),
+                totalAgents: agentLoad.size,
+                overloaded: overloaded,
+                summary: Array.from(agentLoad.entries()).map(([agent, load]) => ({
+                  agent,
+                  activeCount: load.count,
+                  totalEffort: load.totalEffort,
+                  highPriority: load.highPriority
+                }))
+              };
+              
+              core.setOutput('report', JSON.stringify(report));
+              core.setOutput('has_overload', overloaded.length > 0);
+              
+              console.log(`Checked ${agentLoad.size} agents, ${overloaded.length} overloaded`);
+              
+            } catch (error) {
+              console.error('Error querying project:', error);
+              core.setOutput('has_overload', false);
+            }
+      
+      - name: Generate Load Report
+        id: generate-report
+        run: |
+          REPORT='${{ steps.check-load.outputs.report }}'
+          echo "$REPORT" | jq '.' > agent-load-report.json
+          
+          echo "Report saved to agent-load-report.json"
+      
+      - name: Create/Update Load Report Issue
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const report = JSON.parse('${{ steps.check-load.outputs.report }}');
+            
+            let body = `# 📊 Agent Load Balancing Report\n\n`;
+            body += `**Generated**: ${report.timestamp}\n`;
+            body += `**Total Active Agents**: ${report.totalAgents}\n\n`;
+            
+            // Summary table
+            body += `## 📈 Load Summary\n\n`;
+            body += `| Agent | Active Workflows | Total Effort | High Priority |\n`;
+            body += `|-------|------------------|--------------|---------------|\n`;
+            
+            for (const item of report.summary.sort((a, b) => b.totalEffort - a.totalEffort)) {
+              const status = item.activeCount >= 5 || item.totalEffort >= 30 ? '⚠️' : '✅';
+              body += `| ${status} ${item.agent} | ${item.activeCount} | ${item.totalEffort} | ${item.highPriority} |\n`;
+            }
+            
+            body += `\n`;
+            
+            // Overloaded agents
+            if (report.overloaded.length > 0) {
+              body += `## 🚨 Overloaded Agents\n\n`;
+              
+              for (const agent of report.overloaded) {
+                body += `### ${agent.agent}\n\n`;
+                body += `- **Active workflows**: ${agent.count}\n`;
+                body += `- **Total effort**: ${agent.totalEffort}\n`;
+                body += `- **High priority items**: ${agent.highPriority}\n`;
+                body += `- **Reason**: ${agent.reason}\n\n`;
+                
+                body += `**Workflows**:\n`;
+                for (const wf of agent.workflows.slice(0, 5)) {
+                  body += `- [#${wf.issue} ${wf.title}](${wf.url}) (${wf.priority}, ${wf.effort})\n`;
+                }
+                if (agent.workflows.length > 5) {
+                  body += `- ... and ${agent.workflows.length - 5} more\n`;
+                }
+                body += `\n`;
+              }
+              
+              body += `**💡 Recommendation**: Consider redistributing work or pausing low-priority items.\n\n`;
+            } else {
+              body += `## ✅ All Agents Operating Within Capacity\n\n`;
+              body += `No overloaded agents detected. System is balanced.\n\n`;
+            }
+            
+            body += `---\n\n`;
+            body += `📊 View details: [IDX: Agent Load](https://github.com/orgs/BlackRoad-OS/projects/9)\n`;
+            body += `🔄 Next update: 1 hour\n`;
+            
+            // Find existing report issue
+            const existingIssues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'agent-load-report',
+              state: 'open'
+            });
+            
+            if (existingIssues.data.length === 0) {
+              // Create new report
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: '📊 Agent Load Balancing Report',
+                body: body,
+                labels: ['agent-load-report', 'automation']
+              });
+            } else {
+              // Update existing
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssues.data[0].number,
+                body: body
+              });
+            }
+      
+      - name: Check Critical Overload
+        if: steps.check-load.outputs.has_overload == 'true'
+        run: |
+          echo "⚠️  WARNING: Some agents are overloaded!"
+          echo "Check the agent load report for details."
+          # Could send Slack notification here

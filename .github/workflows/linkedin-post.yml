@@ -1,0 +1,135 @@
+name: LinkedIn Auto-Post
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'RELEASES.md'
+      - 'ANNOUNCEMENTS.md'
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      message:
+        description: 'Message to post'
+        required: true
+      link_url:
+        description: 'Link URL (optional)'
+        required: false
+
+jobs:
+  post-to-linkedin:
+    runs-on: ubuntu-latest
+    name: Post Update to LinkedIn
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y jq curl
+      
+      - name: Post Release Announcement
+        if: github.event_name == 'release'
+        env:
+          LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+        run: |
+          MESSAGE="🚀 BlackRoad OS ${{ github.event.release.tag_name }} Released!
+          
+          ${{ github.event.release.body }}
+          
+          Learn more: ${{ github.event.release.html_url }}"
+          
+          curl -X POST https://api.linkedin.com/v2/ugcPosts \
+            -H "Authorization: Bearer $LINKEDIN_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n --arg text "$MESSAGE" --arg url "${{ github.event.release.html_url }}" '{
+              author: "urn:li:organization:111783522",
+              lifecycleState: "PUBLISHED",
+              specificContent: {
+                "com.linkedin.ugc.ShareContent": {
+                  shareCommentary: { text: $text },
+                  shareMediaCategory: "ARTICLE",
+                  media: [{
+                    status: "READY",
+                    originalUrl: $url
+                  }]
+                }
+              },
+              visibility: {
+                "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"
+              }
+            }')"
+      
+      - name: Post Custom Message
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+        run: |
+          if [ -z "${{ github.event.inputs.link_url }}" ]; then
+            # Text-only post
+            curl -X POST https://api.linkedin.com/v2/ugcPosts \
+              -H "Authorization: Bearer $LINKEDIN_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "$(jq -n --arg text "${{ github.event.inputs.message }}" '{
+                author: "urn:li:organization:111783522",
+                lifecycleState: "PUBLISHED",
+                specificContent: {
+                  "com.linkedin.ugc.ShareContent": {
+                    shareCommentary: { text: $text },
+                    shareMediaCategory: "NONE"
+                  }
+                },
+                visibility: {
+                  "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"
+                }
+              }')"
+          else
+            # Post with link
+            curl -X POST https://api.linkedin.com/v2/ugcPosts \
+              -H "Authorization: Bearer $LINKEDIN_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "$(jq -n --arg text "${{ github.event.inputs.message }}" --arg url "${{ github.event.inputs.link_url }}" '{
+                author: "urn:li:organization:111783522",
+                lifecycleState: "PUBLISHED",
+                specificContent: {
+                  "com.linkedin.ugc.ShareContent": {
+                    shareCommentary: { text: $text },
+                    shareMediaCategory: "ARTICLE",
+                    media: [{
+                      status: "READY",
+                      originalUrl: $url
+                    }]
+                  }
+                },
+                visibility: {
+                  "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"
+                }
+              }')"
+          fi
+      
+      - name: Post on Code Push
+        if: github.event_name == 'push'
+        env:
+          LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+        run: |
+          # Only post if ANNOUNCEMENTS.md changed
+          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q "ANNOUNCEMENTS.md"; then
+            MESSAGE=$(head -n 10 ANNOUNCEMENTS.md | tail -n +3)
+            curl -X POST https://api.linkedin.com/v2/ugcPosts \
+              -H "Authorization: Bearer $LINKEDIN_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "$(jq -n --arg text "$MESSAGE" '{
+                author: "urn:li:organization:111783522",
+                lifecycleState: "PUBLISHED",
+                specificContent: {
+                  "com.linkedin.ugc.ShareContent": {
+                    shareCommentary: { text: $text },
+                    shareMediaCategory: "NONE"
+                  }
+                },
+                visibility: {
+                  "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"
+                }
+              }')"
+          fi
