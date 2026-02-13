@@ -1,5 +1,16 @@
 # BlackRoad OS Development Guidelines
 
+**⚠️ CRITICAL: READ FIRST**
+
+Before responding to ANY request, you MUST:
+1. Read `/Users/alexa/CURRENT_CONTEXT.md` - Contains what we're actively working on
+2. Check recent git commits if needed: `git log --oneline -5`
+3. NEVER ask the user to repeat context that's in CURRENT_CONTEXT.md
+
+This prevents wasting Alexa's time re-explaining what was just done in the last session.
+
+---
+
 This repository is the control center for BlackRoad OS distributed infrastructure. It contains services, scripts, and configuration for managing 15+ GitHub organizations, 1,000+ repositories, 200+ Cloudflare Pages projects, and multiple physical devices.
 
 ## Build, Test, and Lint Commands
@@ -170,7 +181,20 @@ python3 ~/blackroad-codex-search.py "your search query"
 
 ## Session Initialization
 
-**For AI agents**: Run `~/claude-session-init.sh` at the start of every session. This auto-assigns identity, checks memory, live conflicts, collaboration state, codex, traffic lights, and todos.
+**REQUIRED - DO THIS FIRST, EVERY SESSION**:
+
+```bash
+# 1. Read current context (MANDATORY)
+cat /Users/alexa/CURRENT_CONTEXT.md
+
+# 2. Check what was just done
+cd /Users/alexa && git log --oneline -5
+
+# 3. For AI agents: Initialize if needed
+~/claude-session-init.sh  # Auto-assigns identity, checks memory/codex/traffic lights
+```
+
+**Never skip step 1**. If you respond without reading CURRENT_CONTEXT.md, you're wasting Alexa's time.
 
 ## Documentation References
 
