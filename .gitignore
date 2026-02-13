@@ -1,0 +1,77 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.Python
+
+# Build outputs
+.next/
+.wrangler/
+dist/
+build/
+*.o
+*.so
+*.dylib
+*.out
+
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+.dev.vars
+*.key
+*.pem
+*_rsa
+*.pub.asc
+.stripe_keys
+.cloudflare_dns_token
+
+# IDE & OS
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
+*.save
+.backup-*
+nohup.out
+
+# User-specific runtime
+.Trash/
+.zsh_history
+.bash_history
+.python_history
+.node_repl_history
+
+# System
+.CFUserTextEncoding
+.cups/
+.cache/
+Library/
+Applications/
+Desktop/
+Documents/
+Downloads/
+Movies/
+Music/
+Pictures/
+Public/
+OneDrive/
+Work/
+Workspace/
