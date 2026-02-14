@@ -7,6 +7,23 @@ set -e
 
 SESSION_START=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
 
+# ════════════════════════════════════════════════════════════════
+# [WORKSPACE] - Ensure we're in BlackRoad-Private
+# ════════════════════════════════════════════════════════════════
+REQUIRED_REPO="/Users/alexa/BlackRoad-Private"
+CURRENT_DIR=$(pwd)
+
+if [ "$CURRENT_DIR" != "$REQUIRED_REPO" ]; then
+    echo "⚠️  WARNING: Not in BlackRoad-Private repo!"
+    echo "   Current:  $CURRENT_DIR"
+    echo "   Required: $REQUIRED_REPO"
+    echo ""
+    echo "🔄 Switching to BlackRoad-Private..."
+    cd "$REQUIRED_REPO"
+    echo "✅ Now in correct workspace"
+    echo ""
+fi
+
 # Colors
 PINK='\033[38;5;205m'
 CYAN='\033[0;36m'
