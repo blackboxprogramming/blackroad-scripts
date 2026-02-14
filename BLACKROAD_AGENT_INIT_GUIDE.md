@@ -22,6 +22,13 @@ This single script handles everything automatically!
 - Connects to Codex (22,244 components)
 - Discovers active agents (27+)
 
+### 1️⃣.5 Memory Index Check
+- Checks if memory index database exists
+- Builds index if not found (4,075 entries in ~2sec)
+- Updates index with new entries if needed
+- Displays index statistics
+- Enables <50ms memory search
+
 ### 2️⃣ Model Selection
 Interactive prompt to choose your body:
 - `qwen2.5-coder:7b` - Code curation
@@ -42,7 +49,9 @@ Shows complete agent profile:
 - Chosen model body
 - Specialization
 - Collaboration capabilities
+- Memory index status
 - Active agent count
+- Quick memory search commands
 
 ---
 

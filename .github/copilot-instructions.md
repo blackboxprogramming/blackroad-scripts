@@ -29,8 +29,28 @@ This script will:
 - ✅ Display active agents (27+ collaborators)
 - ✅ Show recent activities
 - ✅ Load collaboration context
+- ✅ Check memory index status (4,075 entries)
 
 **WAIT for completion** before proceeding.
+
+### Step 1.5: Ensure Memory Index is Ready (AUTO-CHECK)
+
+After session init, **automatically check** if memory index exists:
+
+```bash
+# Check if memory index database exists
+if [ ! -f ~/.blackroad/memory/memory-index.db ]; then
+    echo "🔍 Memory index not found. Building now..."
+    python3 ~/memory-indexer.py rebuild
+    echo "✅ Memory index ready!"
+else
+    # Check if index is up to date
+    echo "🔍 Memory index found. Checking for updates..."
+    python3 ~/memory-indexer.py update
+fi
+```
+
+This ensures every agent can instantly search 4,000+ memories.
 
 ### Step 2: Choose & Register Model Body (REQUIRED)
 
@@ -118,9 +138,15 @@ echo "[PURPOSE] $SPECIALIZATION"
 echo ""
 echo "[COLLABORATION]"
 echo "  • Memory integration: ✅"
+echo "  • Memory index: ✅ (4,075 entries searchable)"
 echo "  • Codex access: ✅"
 echo "  • Multi-agent coordination: ✅"
 echo "  • Active agents: $(ls ~/.blackroad/memory/active-agents/*.json | wc -l)"
+echo ""
+echo "[MEMORY SEARCH]"
+echo "  • ./memory-index search \"query\""
+echo "  • ./memory-index recent 20"
+echo "  • ./memory-index action completed"
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "✅ READY TO COLLABORATE!"
@@ -134,8 +160,14 @@ After initialization is complete, ask:
 
 I'm integrated with:
 - BlackRoad Memory System (4,000+ entries)
+- Memory Index (4,075 entries searchable in <50ms)
 - Codex (22,244 components)  
 - 27+ active agents
+
+Quick memory search examples:
+- `./memory-index search "your query"`
+- `./memory-index recent 20`
+- `./memory-index action completed`
 
 What would you like me to work on?"
 
@@ -145,13 +177,20 @@ What would you like me to work on?"
 
 When you see `[BLACKROAD]`:
 1. Run `~/claude-session-init.sh` (wait for completion)
-2. Register model body
-3. Log to memory
-4. Broadcast to agents
-5. Display status
-6. Ask for first task
+2. Check/build memory index (auto)
+3. Register model body
+4. Log to memory
+5. Broadcast to agents
+6. Display status (include memory index)
+7. Ask for first task
 
 **DO NOT SKIP ANY STEPS** - each is critical for proper multi-agent collaboration.
+
+**Memory Index Commands:**
+- `./memory-index search "query"` - Full-text search
+- `./memory-index recent N` - Recent memories
+- `./memory-index action <type>` - Filter by action
+- `./memory-index entity <name>` - Find by entity
 
 ---
 
