@@ -310,8 +310,8 @@ batch_update_top_repos() {
     
     # Get top 100 repos by stars/activity
     echo "Fetching top 100 repositories..."
-    gh repo list BlackRoad-OS --limit 100 --json name,stargazersCount,updatedAt \
-        --jq 'sort_by(.stargazersCount) | reverse | .[].name' > /tmp/top-repos.txt
+    gh repo list BlackRoad-OS --limit 100 --json name,stargazerCount,updatedAt \
+        --jq 'sort_by(.stargazerCount) | reverse | .[].name' > /tmp/top-repos.txt
     
     local count=0
     while IFS= read -r repo; do
