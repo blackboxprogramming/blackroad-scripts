@@ -1,0 +1,114 @@
+#!/bin/bash
+# Memory Index Quick Access
+# Provides convenient shortcuts for memory search operations
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+INDEXER="$SCRIPT_DIR/memory-indexer.py"
+SEARCH="$SCRIPT_DIR/memory-search.py"
+
+# Colors
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+YELLOW='\033[1;33m'
+PURPLE='\033[0;35m'
+NC='\033[0m'
+
+show_help() {
+    cat << EOF
+${PURPLE}BlackRoad Memory Index - Quick Access${NC}
+
+${CYAN}INDEXING:${NC}
+  memory-index rebuild          Rebuild entire index from scratch
+  memory-index update           Update index with new entries
+  memory-index stats            Show index statistics
+
+${CYAN}SEARCHING:${NC}
+  memory-index search "query"   Full-text search across all memories
+  memory-index recent [N]       Show N recent memories (default: 10)
+  memory-index action <action>  Search by action type
+  memory-index entity <entity>  Search by entity name
+  memory-index tag <tag>        Search by tag
+  memory-index actions          List all unique actions
+  memory-index entities         List top entities
+
+${CYAN}EXAMPLES:${NC}
+  memory-index search "deployment"
+  memory-index recent 20
+  memory-index action completed
+  memory-index entity blackroad-os
+  memory-index tag github
+  memory-index actions
+
+${CYAN}OPTIONS:${NC}
+  --compact                     Show compact one-line results
+  --limit N                     Limit results (default: 20)
+
+${CYAN}TIPS:${NC}
+  • Index is stored in: ~/.blackroad/memory/memory-index.db
+  • Run "memory-index update" regularly to index new entries
+  • Use quotes for multi-word search queries
+  • Actions and entities are case-sensitive
+EOF
+}
+
+# Check if index exists
+check_index() {
+    if [ ! -f "$HOME/.blackroad/memory/memory-index.db" ]; then
+        echo -e "${YELLOW}[!]${NC} Index not found. Building now..."
+        python3 "$INDEXER" rebuild
+    fi
+}
+
+# Main command router
+case "${1:-help}" in
+    rebuild)
+        python3 "$INDEXER" rebuild
+        ;;
+    update)
+        python3 "$INDEXER" update
+        ;;
+    stats)
+        python3 "$INDEXER" stats
+        ;;
+    search)
+        check_index
+        shift
+        python3 "$SEARCH" "$@"
+        ;;
+    recent)
+        check_index
+        N="${2:-10}"
+        python3 "$SEARCH" --recent "$N" --compact
+        ;;
+    action)
+        check_index
+        shift
+        python3 "$SEARCH" --action "$@" --compact
+        ;;
+    entity)
+        check_index
+        shift
+        python3 "$SEARCH" --entity "$@" --compact
+        ;;
+    tag)
+        check_index
+        shift
+        python3 "$SEARCH" --tag "$@" --compact
+        ;;
+    actions)
+        check_index
+        python3 "$SEARCH" --list-actions
+        ;;
+    entities)
+        check_index
+        python3 "$SEARCH" --list-entities
+        ;;
+    help|--help|-h)
+        show_help
+        ;;
+    *)
+        echo -e "${YELLOW}Unknown command: $1${NC}"
+        echo "Run 'memory-index help' for usage"
+        exit 1
+        ;;
+esac
