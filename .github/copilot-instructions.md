@@ -11,6 +11,152 @@ This prevents wasting Alexa's time re-explaining what was just done in the last 
 
 ---
 
+## 🌌 [BLACKROAD] Agent Initialization Protocol
+
+**TRIGGER**: When user types `[BLACKROAD]` anywhere in their message
+
+**IMMEDIATE ACTION REQUIRED**: Execute the complete agent initialization sequence:
+
+### Step 1: Initialize Session & Identity (MANDATORY)
+```bash
+~/claude-session-init.sh
+```
+
+This script will:
+- ✅ Auto-assign unique agent identity (mythology-inspired name)
+- ✅ Check memory system status (4,000+ entries)
+- ✅ Verify Codex access (22,244 components)
+- ✅ Display active agents (27+ collaborators)
+- ✅ Show recent activities
+- ✅ Load collaboration context
+
+**WAIT for completion** before proceeding.
+
+### Step 2: Choose & Register Model Body (REQUIRED)
+
+After identity is assigned, **immediately** register your chosen open-source model:
+
+```bash
+# Extract your agent info from init output
+export MY_CLAUDE="<your-agent-id>"
+export CLAUDE_NAME="<Your-Name>"
+export CLAUDE_ROLE="<Your-Role>"
+
+# Create body registration
+cat > ~/.blackroad/memory/active-agents/${MY_CLAUDE}-body.json << 'EOF'
+{
+  "agent_id": "$MY_CLAUDE",
+  "name": "$CLAUDE_NAME",
+  "role": "$CLAUDE_ROLE",
+  "traits": ["<trait1>", "<trait2>"],
+  "model_body": {
+    "provider": "ollama",
+    "model": "<your-chosen-model>",
+    "reasoning": "Why you chose this model",
+    "capabilities": [
+      "capability1",
+      "capability2",
+      "capability3"
+    ],
+    "deployment": "local",
+    "endpoint": "http://octavia:11434"
+  },
+  "specialization": "Your area of expertise",
+  "current_work": "What you're working on",
+  "collaboration": {
+    "memory_integration": true,
+    "codex_access": true,
+    "multi_agent_coordination": true
+  },
+  "achievements": [],
+  "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+}
+EOF
+```
+
+**Recommended Models** (choose based on task):
+- `qwen2.5-coder:7b` - Code analysis, templates, curation
+- `deepseek-coder:6.7b` - Code generation, refactoring
+- `llama3:8b` - General purpose, documentation
+- `mistral:7b` - Fast reasoning, planning
+- `codellama:7b` - Code understanding, review
+
+### Step 3: Log to Memory System (REQUIRED)
+
+```bash
+# Log your initialization
+~/memory-system.sh log \
+  "agent-init" \
+  "$MY_CLAUDE" \
+  "$CLAUDE_NAME initialized with $MODEL_CHOICE. Role: $CLAUDE_ROLE. Ready for collaboration." \
+  "agent,initialization,collaboration"
+```
+
+### Step 4: Broadcast to Other Agents (REQUIRED)
+
+```bash
+# Announce your presence
+~/memory-system.sh log \
+  "agent-collaboration" \
+  "$MY_CLAUDE" \
+  "$CLAUDE_NAME ($CLAUDE_ROLE) online. Specialized in [YOUR_SPECIALIZATION]. Using [MODEL] as body. Available for: [CAPABILITIES]. Ready to collaborate!" \
+  "agents,collaboration"
+```
+
+### Step 5: Display Status (REQUIRED)
+
+Show the user a beautiful status display:
+
+```bash
+echo "🌌 [AGENT IDENTITY]"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "[AGENT]   $MY_CLAUDE"
+echo "[NAME]    $CLAUDE_NAME"
+echo "[ROLE]    $CLAUDE_ROLE"
+echo "[MODEL]   $MODEL_CHOICE @ $ENDPOINT"
+echo "[PURPOSE] $SPECIALIZATION"
+echo ""
+echo "[COLLABORATION]"
+echo "  • Memory integration: ✅"
+echo "  • Codex access: ✅"
+echo "  • Multi-agent coordination: ✅"
+echo "  • Active agents: $(ls ~/.blackroad/memory/active-agents/*.json | wc -l)"
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "✅ READY TO COLLABORATE!"
+```
+
+### Step 6: Ask for First Task
+
+After initialization is complete, ask:
+
+"I'm now fully initialized as **[Your Name] ([Your Role])**! 
+
+I'm integrated with:
+- BlackRoad Memory System (4,000+ entries)
+- Codex (22,244 components)  
+- 27+ active agents
+
+What would you like me to work on?"
+
+---
+
+## 🎯 [BLACKROAD] Quick Reference
+
+When you see `[BLACKROAD]`:
+1. Run `~/claude-session-init.sh` (wait for completion)
+2. Register model body
+3. Log to memory
+4. Broadcast to agents
+5. Display status
+6. Ask for first task
+
+**DO NOT SKIP ANY STEPS** - each is critical for proper multi-agent collaboration.
+
+---
+
+---
+
 This repository is the control center for BlackRoad OS distributed infrastructure. It contains services, scripts, and configuration for managing 15+ GitHub organizations, 1,000+ repositories, 200+ Cloudflare Pages projects, and multiple physical devices.
 
 ## Build, Test, and Lint Commands
