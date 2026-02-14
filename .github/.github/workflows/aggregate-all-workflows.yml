@@ -1,0 +1,137 @@
+name: Tier 2 - Aggregate All Workflows
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # Every 30 minutes
+  workflow_dispatch:  # Manual trigger
+  repository_dispatch:
+    types: [workflow-indexed]  # Triggered by Tier 1 repos
+
+permissions:
+  contents: read
+  issues: write
+  projects: write
+
+jobs:
+  aggregate-workflows:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout aggregation repo
+        uses: actions/checkout@v4
+        with:
+          repository: BlackRoad-OS/.github
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: aggregation
+
+      - name: Discover all BlackRoad-OS repos
+        id: discover
+        run: |
+          echo "Discovering repos with workflow indexes..."
+          gh repo list BlackRoad-OS --limit 100 --json name,isArchived,isFork \
+            --jq '.[] | select(.isArchived == false and .isFork == false) | .name' \
+            > repos.txt
+          
+          echo "Found $(wc -l < repos.txt) repos"
+          cat repos.txt
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fetch all workflow indexes
+        run: |
+          mkdir -p collected-indexes
+          
+          while IFS= read -r repo; do
+            echo "Fetching index from $repo..."
+            
+            # Try to fetch .blackroad/workflow-index.jsonl
+            if gh api \
+              -H "Accept: application/vnd.github+json" \
+              "/repos/BlackRoad-OS/$repo/contents/.blackroad/workflow-index.jsonl" \
+              --jq '.content' 2>/dev/null | base64 -d > "collected-indexes/$repo.jsonl"; then
+              echo "  ✅ Found index in $repo ($(wc -l < collected-indexes/$repo.jsonl) workflows)"
+            else
+              echo "  ⚠️  No index in $repo"
+            fi
+          done < repos.txt
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Merge all indexes
+        run: |
+          echo "Merging all workflow indexes..."
+          cat collected-indexes/*.jsonl > aggregation/all-workflows.jsonl 2>/dev/null || touch aggregation/all-workflows.jsonl
+          
+          TOTAL=$(wc -l < aggregation/all-workflows.jsonl)
+          echo "Total workflows across all repos: $TOTAL"
+          
+          # Generate summary
+          cat > aggregation/aggregate-summary.md << EOF
+          # Workflow Aggregation Summary
+          
+          **Generated:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Total Workflows:** $TOTAL
+          **Repos Scanned:** $(wc -l < repos.txt)
+          
+          ## By State
+          $(jq -r '.state' aggregation/all-workflows.jsonl 2>/dev/null | sort | uniq -c || echo "No data")
+          
+          ## By Risk
+          $(jq -r '.risk' aggregation/all-workflows.jsonl 2>/dev/null | sort | uniq -c || echo "No data")
+          
+          ## By Traffic Light
+          $(jq -r '.trafficLight' aggregation/all-workflows.jsonl 2>/dev/null | sort | uniq -c || echo "No data")
+          
+          ## By Service
+          $(jq -r '.service' aggregation/all-workflows.jsonl 2>/dev/null | sort | uniq -c || echo "No data")
+          EOF
+
+      - name: Update GitHub Project
+        run: |
+          echo "TODO: Sync to GitHub Project #9"
+          echo "This requires GraphQL mutations which need additional permissions"
+          echo "For now, the aggregated data is in all-workflows.jsonl"
+
+      - name: Commit aggregated data
+        run: |
+          cd aggregation
+          git config user.name "BlackRoad Workflow System"
+          git config user.email "workflows@blackroad.io"
+          git add all-workflows.jsonl aggregate-summary.md
+          git diff --staged --quiet || git commit -m "🌐 Update aggregated workflow index ($(wc -l < all-workflows.jsonl) workflows)"
+          git push || echo "No changes to push"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate dashboard data
+        run: |
+          mkdir -p aggregation/dashboard
+          
+          # Generate JSON for dashboard consumption
+          cat > aggregation/dashboard/stats.json << EOF
+          {
+            "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+            "totalWorkflows": $(wc -l < aggregation/all-workflows.jsonl),
+            "reposWithIndexes": $(ls collected-indexes/*.jsonl 2>/dev/null | wc -l),
+            "byState": $(jq -r '.state' aggregation/all-workflows.jsonl 2>/dev/null | sort | uniq -c | jq -R 'split(" ") | {count: .[0], state: .[1]}' | jq -s '.' || echo '[]'),
+            "byRisk": $(jq -r '.risk' aggregation/all-workflows.jsonl 2>/dev/null | sort | uniq -c | jq -R 'split(" ") | {count: .[0], risk: .[1]}' | jq -s '.' || echo '[]')
+          }
+          EOF
+          
+          cd aggregation
+          git add dashboard/
+          git diff --staged --quiet || git commit -m "📊 Update dashboard stats"
+          git push || echo "No changes"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Summary
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ Tier 2 Aggregation Complete"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "📊 Total workflows: $(wc -l < aggregation/all-workflows.jsonl)"
+          echo "📦 Repos indexed: $(ls collected-indexes/*.jsonl 2>/dev/null | wc -l)"
+          echo ""
+          echo "📄 View aggregated data:"
+          echo "https://github.com/BlackRoad-OS/.github/blob/main/all-workflows.jsonl"
