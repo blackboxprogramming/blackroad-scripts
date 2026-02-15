@@ -34,12 +34,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '20'
 
@@ -69,13 +69,13 @@ jobs:
 
       - name: CodeQL Analysis
         if: inputs.scan_type == 'codeql' || inputs.scan_type == 'full'
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@60d8f0d1f1f8c8d07ef53bd027032705d414ec28 # v3
         with:
           languages: javascript, typescript
 
       - name: CodeQL Analyze
         if: inputs.scan_type == 'codeql' || inputs.scan_type == 'full'
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@60d8f0d1f1f8c8d07ef53bd027032705d414ec28 # v3
 
       - name: Report results
         run: |
