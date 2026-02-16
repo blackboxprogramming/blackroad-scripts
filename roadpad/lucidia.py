@@ -24,7 +24,15 @@ import threading
 import json
 from datetime import datetime
 from dataclasses import dataclass
-from typing import Callable, List, Dict, Any
+from typing import Callable, List, Dict, Any, Tuple
+
+# Security module (sovereign protection)
+try:
+    from security import SecurityContext, verify_backend_host
+    SECURITY_ENABLED = True
+except ImportError:
+    SECURITY_ENABLED = False
+    SecurityContext = None
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # LUCIDIA BRANDING
@@ -294,7 +302,7 @@ def get_best_backend() -> Backend:
 class BackendRunner:
     """Runs any AI backend as subprocess. Lucidia routes here."""
 
-    def __init__(self, backend: str = None):
+    def __init__(self, backend: str = None, security: 'SecurityContext' = None):
         if backend and backend in BACKENDS:
             self.backend = BACKENDS[backend]
         else:
@@ -309,10 +317,23 @@ class BackendRunner:
         self.on_output: Callable[[str], None] = None
         self.cwd = os.getcwd()
 
+        # Security context
+        self.security = security
+        if SECURITY_ENABLED and not self.security:
+            self.security = SecurityContext()
+
     def start(self) -> bool:
-        """Start backend subprocess."""
+        """Start backend subprocess with security verification."""
         try:
             cmd = self.backend.command.copy()
+
+            # Security: Verify backend is trusted
+            if self.security:
+                allowed, reason = self.security.check_backend(cmd)
+                if not allowed:
+                    print(f"  ✗ Security blocked: {reason}")
+                    return False
+                self.security.audit.log("backend_start", self.backend.name)
 
             self.process = subprocess.Popen(
                 cmd,
@@ -332,34 +353,59 @@ class BackendRunner:
             return True
         except Exception as e:
             print(f"  ✗ Backend failed: {e}")
+            if self.security:
+                self.security.audit.log_security("backend_error", {"error": str(e)})
             return False
 
     def _read_output(self):
-        """Read output from backend."""
+        """Read output from backend with security filtering."""
         while self.running and self.process:
             try:
                 line = self.process.stdout.readline()
                 if line:
-                    self.output_buffer.append(line.rstrip())
+                    output = line.rstrip()
+
+                    # Security: Filter output for secrets
+                    if self.security:
+                        output, warnings = self.security.filter_output(output)
+                        for w in warnings:
+                            print(f"  ⚠ {w}")
+
+                    self.output_buffer.append(output)
                     if self.on_output:
-                        self.on_output(line.rstrip())
+                        self.on_output(output)
                 elif self.process.poll() is not None:
                     self.running = False
                     break
             except:
                 break
 
-    def send(self, text: str) -> None:
-        """Send input to backend."""
-        if self.process and self.process.stdin:
-            try:
-                self.process.stdin.write(text + "\n")
-                self.process.stdin.flush()
-            except:
-                pass
+    def send(self, text: str) -> Tuple[bool, str]:
+        """Send input to backend with security checks."""
+        if not self.process or not self.process.stdin:
+            return False, "backend not running"
+
+        # Security: Check and sanitize input
+        if self.security:
+            allowed, sanitized, warning = self.security.check_input(text)
+            if not allowed:
+                return False, warning
+            if warning:
+                print(f"  ⚠ {warning}")
+            text = sanitized
+            self.security.audit.log_input(self.backend.name, text)
+
+        try:
+            self.process.stdin.write(text + "\n")
+            self.process.stdin.flush()
+            return True, ""
+        except Exception as e:
+            return False, str(e)
 
     def stop(self) -> None:
         """Stop backend subprocess."""
+        if self.security:
+            self.security.audit.log("backend_stop", self.backend.name if self.backend else "unknown")
         self.running = False
         if self.process:
             self.process.terminate()
@@ -373,6 +419,12 @@ class BackendRunner:
         output = self.output_buffer.copy()
         self.output_buffer.clear()
         return output
+
+    def get_security_status(self) -> Dict:
+        """Get security status for this backend."""
+        if self.security:
+            return self.security.get_status()
+        return {"security": "disabled"}
 
 
 # Legacy alias
@@ -456,11 +508,12 @@ class LucidiaShell:
             return True
         elif cmd == "/help":
             print("\n  Lucidia Commands:")
-            print("    /backend - Select inference backend")
-            print("    /new     - New session")
-            print("    /quit    - Exit")
-            print("    /layers  - Show loaded layers")
-            print("    /status  - Show backend status")
+            print("    /backend  - Select inference backend")
+            print("    /new      - New session")
+            print("    /quit     - Exit")
+            print("    /layers   - Show loaded layers")
+            print("    /status   - Show backend status")
+            print("    /security - Show security status")
             return True
         elif cmd == "/layers":
             print(LAYERS_BOOT)
@@ -473,6 +526,22 @@ class LucidiaShell:
                 print(f"  Local:   {'Yes' if b.priority <= 3 else 'No'}")
             else:
                 print("\n  No backend connected")
+            return True
+        elif cmd == "/security":
+            if self.backend:
+                status = self.backend.get_security_status()
+                print("\n  Security Status:")
+                if "session_stats" in status:
+                    stats = status["session_stats"]
+                    print(f"    Session:    {stats.get('session_id', 'unknown')}")
+                    print(f"    Events:     {stats.get('total_events', 0)}")
+                    print(f"    Inputs:     {stats.get('inputs', 0)}")
+                    print(f"    Outputs:    {stats.get('outputs', 0)}")
+                print(f"    Rate limit: {status.get('rate_limit_remaining', 'N/A')} remaining")
+                print(f"    Warnings:   {status.get('warnings', 0)}")
+                print(f"    Blocked:    {status.get('blocked', 0)}")
+            else:
+                print("\n  Security: disabled (no backend)")
             return True
         elif cmd in ("/quit", "/exit", "/q"):
             self.running = False
@@ -493,6 +562,12 @@ class LucidiaShell:
             print(f"  ✓ Using {self.backend.backend.name} ({locality})")
         else:
             print("  ⚠ No backend available - running in offline mode")
+
+        # Security status
+        if SECURITY_ENABLED:
+            print("  ✓ Security: enabled (audit, sanitize, filter)")
+        else:
+            print("  ⚠ Security: module not loaded")
 
         if not self.backend.start():
             print("  ✗ Failed to start backend")
@@ -518,9 +593,12 @@ class LucidiaShell:
                 if self.handle_command(user_input):
                     continue
 
-            # Send to backend
+            # Send to backend (with security checks)
             self.history.append(user_input)
-            self.backend.send(user_input)
+            success, error = self.backend.send(user_input)
+            if not success:
+                print(f"\n  ✗ Blocked: {error}")
+                continue
 
             # Lucidia thinking indicator
             print("\n    ▣═▣ ···")

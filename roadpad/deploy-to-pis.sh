@@ -48,6 +48,7 @@ FILES=(
     "workspace.py"
     "lucidia.py"
     "lucidia_curses.py"
+    "security.py"
     "lucidia"
     "lucidia-shell"
     "roadpad"
