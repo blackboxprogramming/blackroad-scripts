@@ -1,7 +1,7 @@
 """
 Lucidia Curses UI - Full-screen terminal interface.
 
-This is the real deal - full curses UI with Claude as backend.
+Sovereign BlackRoad OS AI interface. Backends are pluggable.
 """
 
 import curses
@@ -13,15 +13,15 @@ import time
 from datetime import datetime
 from typing import List, Callable
 
-# Import branding from lucidia.py
+# Import from lucidia.py
 from lucidia import (
     LOGO_LARGE, ROBOT_FACE, ROBOT_MINI, LAYERS_BOOT,
-    MODELS, ClaudeWrapper, box
+    BACKENDS, BackendRunner, get_best_backend, box
 )
 
 
 class LucidiaUI:
-    """Full-screen Lucidia interface."""
+    """Full-screen Lucidia interface - sovereign AI."""
 
     def __init__(self, stdscr):
         self.stdscr = stdscr
@@ -30,15 +30,15 @@ class LucidiaUI:
         self.update_size()
 
         # State
-        self.model = "lucidia"
+        self.backend_name = None  # Auto-select
         self.input_buffer = ""
         self.output_lines: List[str] = []
         self.scroll_offset = 0
         self.running = True
-        self.mode = "chat"  # chat, model_select, help
+        self.mode = "chat"  # chat, backend_select, help
 
-        # Claude backend
-        self.claude: ClaudeWrapper = None
+        # Backend (pluggable inference engine)
+        self.backend: BackendRunner = None
 
         # UI regions
         self.header_height = 10
@@ -70,9 +70,12 @@ class LucidiaUI:
 
         # Robot face and info
         info_row = len(logo_lines) + 1
+        backend_info = "auto-selecting..."
+        if self.backend and self.backend.backend:
+            backend_info = f"via {self.backend.backend.name}"
         try:
             self.stdscr.addstr(info_row, 2, "   >─╮")
-            self.stdscr.addstr(info_row + 1, 2, f"    ▣═▣    {MODELS[self.model].name}")
+            self.stdscr.addstr(info_row + 1, 2, f"    ▣═▣    Lucidia ({backend_info})")
             self.stdscr.addstr(info_row + 2, 2, f"    ● ●    {os.getcwd()}")
         except curses.error:
             pass
@@ -123,7 +126,10 @@ class LucidiaUI:
             pass
 
         # Status bar
-        status = f" {MODELS[self.model].name} | /model /help /quit "
+        backend_name = "auto"
+        if self.backend and self.backend.backend:
+            backend_name = self.backend.backend.name
+        status = f" Lucidia | Backend: {backend_name} | /backend /help /quit "
         try:
             self.stdscr.addstr(self.height - 1, 0, status[:self.width-1], curses.A_REVERSE)
         except curses.error:
@@ -135,30 +141,34 @@ class LucidiaUI:
         except curses.error:
             pass
 
-    def draw_model_select(self):
-        """Draw model selection overlay."""
+    def draw_backend_select(self):
+        """Draw backend selection overlay."""
         # Box dimensions
-        box_width = 60
-        box_height = len(MODELS) + 6
+        box_width = 65
+        box_height = len(BACKENDS) + 7
         start_row = (self.height - box_height) // 2
         start_col = (self.width - box_width) // 2
 
         # Draw box
         try:
             self.stdscr.addstr(start_row, start_col, "╭" + "─" * (box_width - 2) + "╮")
-            self.stdscr.addstr(start_row + 1, start_col, "│" + " Select Model".center(box_width - 2) + "│")
+            self.stdscr.addstr(start_row + 1, start_col, "│" + " Select Backend (● local  ○ remote)".center(box_width - 2) + "│")
             self.stdscr.addstr(start_row + 2, start_col, "├" + "─" * (box_width - 2) + "┤")
 
-            for i, (key, model) in enumerate(MODELS.items()):
-                marker = "›" if key == self.model else " "
-                line = f"{marker} {i+1}. {model.name:20} {model.description[:25]}"
+            for i, (key, backend) in enumerate(BACKENDS.items()):
+                marker = "›" if key == self.backend_name else " "
+                local = "●" if backend.priority <= 3 else "○"
+                line = f"{marker} {i+1}. {local} {backend.name:18} {backend.description[:28]}"
                 self.stdscr.addstr(start_row + 3 + i, start_col, "│ " + line.ljust(box_width - 4) + " │")
 
-            self.stdscr.addstr(start_row + 3 + len(MODELS), start_col, "├" + "─" * (box_width - 2) + "┤")
-            self.stdscr.addstr(start_row + 4 + len(MODELS), start_col, "│" + " Press 1-5 or ESC to cancel".center(box_width - 2) + "│")
-            self.stdscr.addstr(start_row + 5 + len(MODELS), start_col, "╰" + "─" * (box_width - 2) + "╯")
+            self.stdscr.addstr(start_row + 3 + len(BACKENDS), start_col, "├" + "─" * (box_width - 2) + "┤")
+            self.stdscr.addstr(start_row + 4 + len(BACKENDS), start_col, "│" + " Press 1-6, A=auto, ESC=cancel".center(box_width - 2) + "│")
+            self.stdscr.addstr(start_row + 5 + len(BACKENDS), start_col, "╰" + "─" * (box_width - 2) + "╯")
         except curses.error:
             pass
+
+    # Legacy alias
+    draw_model_select = draw_backend_select
 
     def draw(self):
         """Draw the full UI."""
@@ -167,8 +177,8 @@ class LucidiaUI:
         self.draw_output()
         self.draw_input()
 
-        if self.mode == "model_select":
-            self.draw_model_select()
+        if self.mode in ("model_select", "backend_select"):
+            self.draw_backend_select()
 
         self.stdscr.refresh()
 
@@ -183,15 +193,21 @@ class LucidiaUI:
 
     def handle_input(self, key: int):
         """Handle keyboard input."""
-        if self.mode == "model_select":
+        if self.mode in ("model_select", "backend_select"):
             if key == 27:  # ESC
                 self.mode = "chat"
-            elif ord('1') <= key <= ord('5'):
+            elif key == ord('a') or key == ord('A'):
+                # Auto-select
+                self.backend_name = None
+                self.add_output("  ✓ Backend: auto-select")
+                self.restart_backend()
+                self.mode = "chat"
+            elif ord('1') <= key <= ord('6'):
                 idx = key - ord('1')
-                models = list(MODELS.keys())
-                if idx < len(models):
-                    self.model = models[idx]
-                    self.add_output(f"  ✓ Switched to {MODELS[self.model].name}")
+                backends = list(BACKENDS.keys())
+                if idx < len(backends):
+                    self.backend_name = backends[idx]
+                    self.add_output(f"  ✓ Backend: {BACKENDS[self.backend_name].name}")
                     self.restart_backend()
                 self.mode = "chat"
             return
@@ -234,57 +250,64 @@ class LucidiaUI:
         self.add_output("")
 
         # Handle commands
-        if text == "/model":
-            self.mode = "model_select"
+        if text in ("/model", "/backend"):
+            self.mode = "backend_select"
             return
         elif text == "/quit" or text == "/q":
             self.running = False
             return
         elif text == "/help":
-            self.add_output("  Commands:")
-            self.add_output("    /model  - Select model")
-            self.add_output("    /quit   - Exit Lucidia")
-            self.add_output("    /help   - Show this help")
+            self.add_output("  Lucidia Commands:")
+            self.add_output("    /backend - Select inference backend")
+            self.add_output("    /quit    - Exit Lucidia")
+            self.add_output("    /help    - Show this help")
+            self.add_output("    /layers  - Show loaded layers")
             return
         elif text == "/layers":
             for line in LAYERS_BOOT.split("\n"):
                 self.add_output(line)
             return
 
-        # Send to Claude
-        if self.claude:
+        # Send to backend
+        if self.backend:
             self.add_output("    ▣═▣ ···")
-            self.claude.send(text)
+            self.backend.send(text)
 
     def restart_backend(self):
-        """Restart Claude with new model."""
-        if self.claude:
-            self.claude.stop()
-        self.claude = ClaudeWrapper(self.model)
-        self.claude.on_output = lambda line: self.add_output(f"    {line}")
-        self.claude.start()
+        """Restart with new backend."""
+        if self.backend:
+            self.backend.stop()
+        self.backend = BackendRunner(self.backend_name)
+        self.backend.on_output = lambda line: self.add_output(f"    {line}")
+        self.backend.start()
 
     def poll_output(self):
-        """Poll for new output from Claude."""
-        if self.claude:
-            output = self.claude.get_output()
+        """Poll for new output from backend."""
+        if self.backend:
+            output = self.backend.get_output()
             for line in output:
-                # Filter UI elements from Claude Code
+                # Filter UI noise from various backends
                 if not any(x in line for x in ["╭", "╰", "│", "thinking"]):
                     self.add_output(f"    {line}")
 
     def run(self):
         """Main loop."""
         # Show boot sequence
-        self.add_output("  ✓ BlackRoad CLI v3 → br-help")
+        self.add_output("  ✓ BlackRoad OS v3")
         for line in LAYERS_BOOT.split("\n"):
             self.add_output(line)
         self.add_output("")
+
+        # Start backend (auto-selects best available)
+        self.add_output("  ◐ Detecting backends...")
+        self.restart_backend()
+
+        if self.backend and self.backend.backend:
+            locality = "local" if self.backend.backend.priority <= 3 else "remote"
+            self.add_output(f"  ✓ Using {self.backend.backend.name} ({locality})")
+        self.add_output("")
         self.add_output("  ✓ Lucidia ready")
         self.add_output("")
-
-        # Start backend
-        self.restart_backend()
 
         while self.running:
             self.draw()
@@ -297,12 +320,12 @@ class LucidiaUI:
             except:
                 pass
 
-            # Poll for Claude output
+            # Poll for backend output
             self.poll_output()
 
         # Cleanup
-        if self.claude:
-            self.claude.stop()
+        if self.backend:
+            self.backend.stop()
 
 
 def main(stdscr):

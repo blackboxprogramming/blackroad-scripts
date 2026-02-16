@@ -1,8 +1,20 @@
 """
-Lucidia - BlackRoad OS AI Interface.
+Lucidia - BlackRoad OS Native AI.
 
-Wraps Claude/Copilot/Ollama with custom Lucidia branding.
-This IS the interface. Not Claude Code. Not Copilot. Lucidia.
+Lucidia is BlackRoad's sovereign AI interface. It routes to various
+backends (Ollama, Copilot, external APIs) but the IDENTITY is Lucidia.
+
+Architecture:
+  Lucidia (this) = The mind, personality, router
+  Backends       = Pluggable inference engines (local-first)
+
+Priority order:
+  1. Local Ollama (cecilia/lucidia Pi with Hailo-8)
+  2. Local Ollama (any available node)
+  3. GitHub Copilot (if authenticated)
+  4. External API fallback
+
+Lucidia is NOT a wrapper around Claude. Lucidia IS the AI.
 """
 
 import os
@@ -155,72 +167,142 @@ def prompt_box(model: str = "Lucidia", version: str = "0.1.0", cwd: str = "~") -
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# MODEL DEFINITIONS
+# BACKEND DEFINITIONS (Pluggable inference engines)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 @dataclass
-class Model:
-    """An AI model."""
+class Backend:
+    """A pluggable AI backend. Lucidia routes to these."""
     name: str
     id: str
-    provider: str  # claude, copilot, ollama, openai
+    type: str  # ollama, copilot, api
     description: str
     command: List[str]
-    reasoning_levels: List[str] = None
+    priority: int = 10  # Lower = preferred (local-first)
+    requires_network: bool = False
 
-    def __post_init__(self):
-        if self.reasoning_levels is None:
-            self.reasoning_levels = ["low", "medium", "high"]
+    def is_available(self) -> bool:
+        """Check if this backend is currently available."""
+        import shutil
+        if not self.command:
+            return False
+        return shutil.which(self.command[0]) is not None
 
 
-MODELS = {
-    "lucidia": Model(
-        name="Lucidia",
-        id="lucidia",
-        provider="claude",
-        description="BlackRoad OS native intelligence",
-        command=["claude", "--dangerously-skip-permissions"]
+# Backends ordered by preference (local-first, sovereign-first)
+BACKENDS = {
+    # === LOCAL INFERENCE (Priority 1-3) ===
+    "cecilia": Backend(
+        name="Cecilia",
+        id="cecilia",
+        type="ollama",
+        description="Hailo-8 edge AI (26 TOPS)",
+        command=["ssh", "cecilia", "ollama", "run", "llama3.2"],
+        priority=1,
+        requires_network=False  # Local network
     ),
-    "claude": Model(
-        name="Claude Opus 4.5",
-        id="claude-opus-4-5-20251101",
-        provider="claude",
-        description="Anthropic frontier model",
-        command=["claude"]
+    "lucidia-node": Backend(
+        name="Lucidia Node",
+        id="lucidia-pi",
+        type="ollama",
+        description="Pi 5 local inference",
+        command=["ssh", "lucidia", "ollama", "run", "llama3.2"],
+        priority=2,
+        requires_network=False
     ),
-    "copilot": Model(
+    "ollama": Backend(
+        name="Ollama Local",
+        id="ollama",
+        type="ollama",
+        description="Local LLM on this machine",
+        command=["ollama", "run", "llama3.2"],
+        priority=3,
+        requires_network=False
+    ),
+
+    # === AUTHENTICATED SERVICES (Priority 5) ===
+    "copilot": Backend(
         name="GitHub Copilot",
         id="copilot",
-        provider="copilot",
-        description="GitHub AI assistant",
-        command=["gh", "copilot", "suggest", "-t", "shell"]
+        type="copilot",
+        description="GitHub AI (requires auth)",
+        command=["gh", "copilot", "suggest", "-t", "shell"],
+        priority=5,
+        requires_network=True
     ),
-    "ollama": Model(
-        name="Ollama Local",
-        id="llama3.2",
-        provider="ollama",
-        description="Local LLM inference",
-        command=["ollama", "run", "llama3.2"]
-    ),
-    "cecilia": Model(
-        name="Cecilia (Hailo-8)",
-        id="cecilia",
-        provider="ollama",
-        description="Edge AI on Cecilia Pi",
-        command=["ssh", "cecilia", "ollama", "run", "llama3.2"]
+
+    # === EXTERNAL APIs (Priority 10 - fallback only) ===
+    "anthropic": Backend(
+        name="Anthropic API",
+        id="anthropic",
+        type="api",
+        description="External API fallback",
+        command=["curl", "-X", "POST", "https://api.anthropic.com/v1/messages"],
+        priority=10,
+        requires_network=True
     ),
 }
 
+# Legacy alias for compatibility
+MODELS = BACKENDS
+
+
+def get_best_backend() -> Backend:
+    """Get the best available backend (local-first)."""
+    import subprocess
+
+    # Sort by priority
+    sorted_backends = sorted(BACKENDS.values(), key=lambda b: b.priority)
+
+    for backend in sorted_backends:
+        # Skip network-required backends if we prefer local
+        if backend.type == "ollama":
+            # Check if Ollama is reachable
+            try:
+                if "ssh" in backend.command:
+                    # Remote Ollama - quick ping check
+                    host = backend.command[1]
+                    result = subprocess.run(
+                        ["ssh", "-o", "ConnectTimeout=2", "-o", "BatchMode=yes", host, "echo", "ok"],
+                        capture_output=True, timeout=3
+                    )
+                    if result.returncode == 0:
+                        return backend
+                else:
+                    # Local Ollama
+                    result = subprocess.run(["ollama", "list"], capture_output=True, timeout=2)
+                    if result.returncode == 0:
+                        return backend
+            except:
+                continue
+        elif backend.type == "copilot":
+            try:
+                result = subprocess.run(["gh", "auth", "status"], capture_output=True, timeout=2)
+                if result.returncode == 0:
+                    return backend
+            except:
+                continue
+
+    # Fallback to first available
+    return sorted_backends[0] if sorted_backends else None
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# CLAUDE WRAPPER
+# BACKEND RUNNER (Generic inference engine)
 # ═══════════════════════════════════════════════════════════════════════════════
 
-class ClaudeWrapper:
-    """Wraps Claude CLI as subprocess with Lucidia UI."""
+class BackendRunner:
+    """Runs any AI backend as subprocess. Lucidia routes here."""
 
-    def __init__(self, model: str = "lucidia"):
-        self.model = MODELS.get(model, MODELS["lucidia"])
+    def __init__(self, backend: str = None):
+        if backend and backend in BACKENDS:
+            self.backend = BACKENDS[backend]
+        else:
+            # Auto-select best available backend
+            self.backend = get_best_backend()
+            if not self.backend:
+                self.backend = BACKENDS.get("ollama")
+
         self.process: subprocess.Popen = None
         self.running = False
         self.output_buffer: List[str] = []
@@ -228,10 +310,9 @@ class ClaudeWrapper:
         self.cwd = os.getcwd()
 
     def start(self) -> bool:
-        """Start Claude subprocess."""
+        """Start backend subprocess."""
         try:
-            # Build command
-            cmd = self.model.command.copy()
+            cmd = self.backend.command.copy()
 
             self.process = subprocess.Popen(
                 cmd,
@@ -250,11 +331,11 @@ class ClaudeWrapper:
 
             return True
         except Exception as e:
-            print(f"Failed to start: {e}")
+            print(f"  ✗ Backend failed: {e}")
             return False
 
     def _read_output(self):
-        """Read output from Claude."""
+        """Read output from backend."""
         while self.running and self.process:
             try:
                 line = self.process.stdout.readline()
@@ -269,7 +350,7 @@ class ClaudeWrapper:
                 break
 
     def send(self, text: str) -> None:
-        """Send input to Claude."""
+        """Send input to backend."""
         if self.process and self.process.stdin:
             try:
                 self.process.stdin.write(text + "\n")
@@ -278,7 +359,7 @@ class ClaudeWrapper:
                 pass
 
     def stop(self) -> None:
-        """Stop Claude subprocess."""
+        """Stop backend subprocess."""
         self.running = False
         if self.process:
             self.process.terminate()
@@ -294,16 +375,25 @@ class ClaudeWrapper:
         return output
 
 
+# Legacy alias
+ClaudeWrapper = BackendRunner
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
-# LUCIDIA SHELL
+# LUCIDIA SHELL (The sovereign AI interface)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 class LucidiaShell:
-    """Interactive Lucidia shell with Claude backend."""
+    """
+    Lucidia - BlackRoad OS Native AI Shell.
+
+    This is THE interface. Backends are pluggable inference engines.
+    Lucidia has her own personality, routes intelligently, prefers local.
+    """
 
     def __init__(self):
-        self.claude = None
-        self.model = "lucidia"
+        self.backend = None
+        self.backend_name = None  # Will auto-select
         self.running = False
         self.history: List[str] = []
         self.cwd = os.getcwd()
@@ -312,57 +402,77 @@ class LucidiaShell:
         """Display boot sequence."""
         print(welcome_screen())
 
-    def select_model(self) -> str:
-        """Interactive model selector."""
-        print("\n  Select Model")
+    def select_backend(self) -> str:
+        """Interactive backend selector."""
+        print("\n  Select Backend")
         print("  " + "─" * 60)
 
-        models = list(MODELS.items())
-        for i, (key, model) in enumerate(models):
-            marker = "›" if key == self.model else " "
-            print(f"  {marker} {i+1}. {model.name:20} {model.description}")
+        backends = list(BACKENDS.items())
+        for i, (key, backend) in enumerate(backends):
+            marker = "›" if key == self.backend_name else " "
+            status = "●" if backend.priority <= 3 else "○"  # Local vs remote
+            print(f"  {marker} {i+1}. {status} {backend.name:20} {backend.description}")
 
-        print("\n  Press number to select or Enter to keep current")
+        print("\n  ● = Local (sovereign)  ○ = Remote")
+        print("  Press number to select or Enter to auto-select")
 
         try:
             choice = input("  > ").strip()
             if choice.isdigit():
                 idx = int(choice) - 1
-                if 0 <= idx < len(models):
-                    self.model = models[idx][0]
-                    print(f"\n  ✓ Selected: {MODELS[self.model].name}")
+                if 0 <= idx < len(backends):
+                    self.backend_name = backends[idx][0]
+                    print(f"\n  ✓ Selected: {BACKENDS[self.backend_name].name}")
         except:
             pass
 
-        return self.model
+        return self.backend_name
+
+    # Legacy alias
+    select_model = select_backend
 
     def show_prompt(self) -> None:
         """Show the prompt UI."""
         home = os.path.expanduser("~")
         cwd = self.cwd.replace(home, "~")
 
-        print(f"\n   >─╮    {MODELS[self.model].name}")
+        # Show Lucidia as the identity, backend in parentheses
+        backend_info = ""
+        if self.backend and self.backend.backend:
+            backend_info = f" ({self.backend.backend.name})"
+
+        print(f"\n   >─╮    Lucidia{backend_info}")
         print(f"    ▣═▣   {cwd}")
         print(f"    ● ●")
 
     def handle_command(self, cmd: str) -> bool:
         """Handle slash commands. Returns True if handled."""
-        if cmd == "/model":
-            self.select_model()
+        if cmd in ("/model", "/backend"):
+            self.select_backend()
             return True
         elif cmd == "/new":
             self.history.clear()
             print("\n  ✓ Started new session")
             return True
         elif cmd == "/help":
-            print("\n  Commands:")
-            print("    /model   - Select model")
+            print("\n  Lucidia Commands:")
+            print("    /backend - Select inference backend")
             print("    /new     - New session")
             print("    /quit    - Exit")
             print("    /layers  - Show loaded layers")
+            print("    /status  - Show backend status")
             return True
         elif cmd == "/layers":
             print(LAYERS_BOOT)
+            return True
+        elif cmd == "/status":
+            if self.backend and self.backend.backend:
+                b = self.backend.backend
+                print(f"\n  Backend: {b.name}")
+                print(f"  Type:    {b.type}")
+                print(f"  Local:   {'Yes' if b.priority <= 3 else 'No'}")
+            else:
+                print("\n  No backend connected")
             return True
         elif cmd in ("/quit", "/exit", "/q"):
             self.running = False
@@ -374,10 +484,19 @@ class LucidiaShell:
         self.boot()
         self.running = True
 
-        # Start Claude
-        self.claude = ClaudeWrapper(self.model)
-        if not self.claude.start():
-            print("  ✗ Failed to start AI backend")
+        # Auto-select best backend (local-first)
+        print("\n  ◐ Detecting backends...")
+        self.backend = BackendRunner(self.backend_name)
+
+        if self.backend.backend:
+            locality = "local" if self.backend.backend.priority <= 3 else "remote"
+            print(f"  ✓ Using {self.backend.backend.name} ({locality})")
+        else:
+            print("  ⚠ No backend available - running in offline mode")
+
+        if not self.backend.start():
+            print("  ✗ Failed to start backend")
+            print("  → Try: ollama serve (start local inference)")
             return
 
         print("\n  ✓ Lucidia ready")
@@ -399,34 +518,33 @@ class LucidiaShell:
                 if self.handle_command(user_input):
                     continue
 
-            # Send to Claude
+            # Send to backend
             self.history.append(user_input)
-            self.claude.send(user_input)
+            self.backend.send(user_input)
 
-            # Print robot thinking
+            # Lucidia thinking indicator
             print("\n    ▣═▣ ···")
 
             # Wait for and display response
             import time
-            time.sleep(0.5)  # Give Claude time to start responding
+            time.sleep(0.5)
 
             while True:
-                output = self.claude.get_output()
+                output = self.backend.get_output()
                 if output:
                     for line in output:
-                        # Filter out Claude Code's own UI elements
+                        # Filter UI noise from various backends
                         if not any(skip in line for skip in ["╭", "╰", "│", "thinking", ">"]):
                             print(f"    {line}")
 
-                if not self.claude.running:
+                if not self.backend.running:
                     break
 
-                # Check if more output coming
                 time.sleep(0.1)
-                if not self.claude.output_buffer:
+                if not self.backend.output_buffer:
                     break
 
-        self.claude.stop()
+        self.backend.stop()
         print("\n  ╰─ Goodbye from Lucidia\n")
 
 
