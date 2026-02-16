@@ -40,6 +40,12 @@ FILES=(
     "themes.py"
     "repl.py"
     "chat.py"
+    "lsp.py"
+    "tree.py"
+    "fuzzy.py"
+    "registers.py"
+    "terminal.py"
+    "workspace.py"
     "roadpad"
     "roadpad.env"
 )
