@@ -35,6 +35,11 @@ FILES=(
     "completion.py"
     "plugins.py"
     "sync.py"
+    "modes.py"
+    "splits.py"
+    "themes.py"
+    "repl.py"
+    "chat.py"
     "roadpad"
     "roadpad.env"
 )
