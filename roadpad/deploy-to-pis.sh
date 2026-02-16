@@ -46,6 +46,10 @@ FILES=(
     "registers.py"
     "terminal.py"
     "workspace.py"
+    "lucidia.py"
+    "lucidia_curses.py"
+    "lucidia"
+    "lucidia-shell"
     "roadpad"
     "roadpad.env"
 )
@@ -80,11 +84,11 @@ for pi in "${PIS[@]}"; do
 
     # Make executable
     echo "  → Setting permissions..."
-    ssh "$pi" 'chmod +x ~/roadpad/roadpad ~/roadpad/roadpad.py'
+    ssh "$pi" 'chmod +x ~/roadpad/roadpad ~/roadpad/roadpad.py ~/roadpad/lucidia ~/roadpad/lucidia-shell'
 
-    # Create symlink in bin
-    echo "  → Creating symlink..."
-    ssh "$pi" 'ln -sf ~/roadpad/roadpad ~/bin/roadpad'
+    # Create symlinks in bin
+    echo "  → Creating symlinks..."
+    ssh "$pi" 'ln -sf ~/roadpad/roadpad ~/bin/roadpad && ln -sf ~/roadpad/lucidia ~/bin/lucidia'
 
     # Verify
     if ssh "$pi" 'python3 -c "import sys; sys.path.insert(0, \"$HOME/roadpad\"); from buffer import Buffer; print(\"OK\")"' 2>/dev/null; then
@@ -99,4 +103,7 @@ echo "════════════════════════�
 echo "  Deployment complete"
 echo "═══════════════════════════════════════════════════"
 echo ""
-echo "Run on any Pi:  roadpad"
+echo "Run on any Pi:"
+echo "  roadpad      # Plain-text editor"
+echo "  lucidia      # AI shell with Claude backend"
+echo "  lucidia -c   # Full-screen curses UI"

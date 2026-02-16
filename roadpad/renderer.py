@@ -6,14 +6,27 @@ Black and white only.
 
 import curses
 
-# Fixed header - exact spacing preserved
+# Lucidia branding
+LOGO_MINI = """\
+   >─╮
+    ▣═▣    Lucidia · BlackRoad OS
+    ● ●    ~"""
+
 HEADER = """\
-▗ ▗   ▖ ▖  RoadPad v0.1.0
-           Lucidia · BlackRoad OS
-  ▘▘ ▝▝    ~"""
+  ██╗     ██╗   ██╗ ██████╗██╗██████╗ ██╗ █████╗
+  ██║     ██║   ██║██╔════╝██║██╔══██╗██║██╔══██╗
+  ██║     ██║   ██║██║     ██║██║  ██║██║███████║
+  ██║     ██║   ██║██║     ██║██║  ██║██║██╔══██║
+  ███████╗╚██████╔╝╚██████╗██║██████╔╝██║██║  ██║
+  ╚══════╝ ╚═════╝  ╚═════╝╚═╝╚═════╝ ╚═╝╚═╝  ╚═╝"""
+
+ROBOT_PROMPT = """\
+   >─╮
+    ▣═▣
+    ● ●"""
 
 HEADER_LINES = HEADER.split("\n")
-HEADER_HEIGHT = len(HEADER_LINES) + 1  # +1 for blank line after
+HEADER_HEIGHT = len(HEADER_LINES) + 4  # +4 for robot and spacing
 
 # Accept modes
 ACCEPT_MODES = ["on", "review", "off"]
@@ -38,10 +51,20 @@ class Renderer:
         return self.height, self.width
 
     def draw_header(self) -> None:
-        """Draw fixed header."""
+        """Draw Lucidia header with logo and robot."""
+        # Draw main logo
         for i, line in enumerate(HEADER_LINES):
             try:
                 self.stdscr.addstr(i, 0, line)
+            except curses.error:
+                pass
+
+        # Draw robot prompt below logo
+        robot_start = len(HEADER_LINES) + 1
+        robot_lines = ROBOT_PROMPT.split("\n")
+        for i, line in enumerate(robot_lines):
+            try:
+                self.stdscr.addstr(robot_start + i, 0, line)
             except curses.error:
                 pass
 
