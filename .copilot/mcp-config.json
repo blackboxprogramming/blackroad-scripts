@@ -4,7 +4,7 @@
       "command": "node",
       "args": ["/Users/alexa/copilot-agent-gateway/server.js"],
       "env": {
-        "OLLAMA_ENDPOINT": "http://octavia:11434"
+        "OLLAMA_ENDPOINT": "http://localhost:11434"
       }
     }
   }
