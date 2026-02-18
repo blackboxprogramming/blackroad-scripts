@@ -1,0 +1,35 @@
+---
+import Layout from '../layouts/Layout.astro'
+import Header from '../components/Header'
+import Hero from '../components/Hero'
+import Stats from '../components/Stats'
+import Cards from '../components/Cards'
+import UseCases from '../components/UseCases'
+import Testimonials from '../components/Testimonials'
+import Integrations from '../components/Integrations'
+import CTA from '../components/CTA'
+import Footer from '../components/Footer'
+import ActivityFeed from '../components/ActivityFeed'
+
+const user = null // TODO: get from session
+const stats = await fetch('https://blackroad.io/api/stats').then(r => r.json()).catch(() => ({}))
+---
+
+<Layout title="BlackRoad · AI Agent OS">
+  <Header user={user} client:load />
+  <main>
+    <Hero user={user} />
+    <Stats stats={stats.stats} />
+    <Cards />
+    <UseCases />
+    <Testimonials />
+    <Integrations />
+    <section class="border-t border-border px-6 py-16">
+      <div class="mx-auto max-w-4xl">
+        <ActivityFeed client:load />
+      </div>
+    </section>
+    <CTA />
+  </main>
+  <Footer />
+</Layout>
