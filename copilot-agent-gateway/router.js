@@ -1,12 +1,13 @@
-// Intelligent routing engine
+// Intelligent routing engine for BlackRoad AI
 import { readFile } from 'fs/promises'
 import { OllamaClient } from './models/ollama-client.js'
 
 export class Router {
-  constructor(ollamaEndpoint) {
+  constructor(blackroadEndpoint) {
     this.registry = null
-    this.client = new OllamaClient(ollamaEndpoint)
+    this.client = new OllamaClient(blackroadEndpoint)
     this.activeRequests = new Map() // Track load per model
+    this.provider = 'BlackRoad AI'
   }
 
   async load() {

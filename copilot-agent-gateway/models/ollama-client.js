@@ -1,8 +1,10 @@
-// Ollama API client for BlackRoad fleet
+// BlackRoad AI client (Ollama-powered)
+// Ollama IS BlackRoad - this is the BlackRoad AI fleet
 export class OllamaClient {
-  constructor(endpoint = 'http://octavia:11434') {
+  constructor(endpoint = 'http://localhost:11434') {
     this.endpoint = endpoint
     this.timeout = 30000
+    this.provider = 'BlackRoad AI (Ollama)'
   }
 
   async generate(model, prompt, options = {}) {
@@ -20,7 +22,7 @@ export class OllamaClient {
       })
 
       if (!response.ok) {
-        throw new Error(`Ollama error: ${response.status} ${response.statusText}`)
+        throw new Error(`BlackRoad AI error: ${response.status} ${response.statusText}`)
       }
 
       const data = await response.json()

@@ -11,7 +11,7 @@ import { writeFile, mkdir } from 'fs/promises'
 import { homedir } from 'os'
 import { join } from 'path'
 
-const OLLAMA_ENDPOINT = process.env.OLLAMA_ENDPOINT || 'http://octavia:11434'
+const BLACKROAD_AI_ENDPOINT = process.env.OLLAMA_ENDPOINT || process.env.BLACKROAD_AI_ENDPOINT || 'http://localhost:11434'
 const CONFIG_DIR = join(homedir(), '.blackroad', 'copilot-gateway')
 const HISTORY_FILE = join(CONFIG_DIR, 'routing-history.jsonl')
 
@@ -30,7 +30,7 @@ class GatewayServer {
     )
 
     this.classifier = new RequestClassifier()
-    this.router = new Router(OLLAMA_ENDPOINT)
+    this.router = new Router(BLACKROAD_AI_ENDPOINT)
     
     this.setupHandlers()
     this.setupErrorHandling()
@@ -202,7 +202,7 @@ class GatewayServer {
         content: [
           {
             type: 'text',
-            text: `Ollama endpoint not reachable at ${OLLAMA_ENDPOINT}`
+            text: `BlackRoad AI endpoint not reachable at ${BLACKROAD_AI_ENDPOINT}`
           }
         ],
         isError: true
@@ -215,15 +215,15 @@ class GatewayServer {
         content: [
           {
             type: 'text',
-            text: `Model ${modelName}: ${available ? '✅ Available' : '❌ Not available'}`
+            text: `BlackRoad AI Model ${modelName}: ${available ? '✅ Available' : '❌ Not available'}`
           }
         ]
       }
     } else {
       const models = await this.router.client.listModels()
       const status = models.success ? 
-        `✅ Ollama healthy\n${models.models.length} models available` :
-        '❌ Ollama error'
+        `✅ BlackRoad AI Fleet healthy\n${models.models.length} models available` :
+        '❌ BlackRoad AI error'
       
       return {
         content: [
@@ -284,8 +284,9 @@ class GatewayServer {
     const transport = new StdioServerTransport()
     await this.server.connect(transport)
     
-    console.error('BlackRoad Copilot Gateway running on stdio')
-    console.error(`Ollama endpoint: ${OLLAMA_ENDPOINT}`)
+    console.error('🌌 BlackRoad Copilot Gateway running on stdio')
+    console.error(`🤖 BlackRoad AI endpoint: ${BLACKROAD_AI_ENDPOINT}`)
+    console.error(`📡 Ollama is BlackRoad AI - all models are BlackRoad-powered`)
   }
 }
 
