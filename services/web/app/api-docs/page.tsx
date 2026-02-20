@@ -1,5 +1,13 @@
 import { CommandPrompt, StatusEmoji, MetricEmoji } from '../components/BlackRoadVisuals'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'API Documentation',
+  description: 'Complete API reference for BlackRoad OS — agent management, RoadChain queries, Lucidia workflows, and PS-SHA-infinity identity.',
+}
+
+
 export default function APIDocsPage() {
   const endpoints = [
     {

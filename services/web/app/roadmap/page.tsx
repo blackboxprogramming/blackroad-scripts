@@ -1,45 +1,53 @@
 import { ScanLine, StatusEmoji, MetricEmoji, GeometricPattern, PulsingDot } from '../components/BlackRoadVisuals'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Roadmap',
+  description: 'BlackRoad OS product roadmap — upcoming features, platform improvements, and release timeline.',
+}
+
+
 export default function RoadmapPage() {
   const quarters = [
     {
-      name: 'Q1 2025',
+      name: 'Q4 2025',
       status: 'completed',
       items: [
-        { title: 'Multi-agent orchestration', status: 'done', description: '27+ AI agents with PS-SHA-∞ memory' },
-        { title: 'Distributed blackroad os', status: 'done', description: '22K+ indexed components' },
-        { title: 'Railway integration', status: 'done', description: 'One-click backend deploy' },
-        { title: 'Cloudflare Pages support', status: 'done', description: '20+ domains live' }
+        { title: 'Multi-agent orchestration', status: 'done', description: '30,000 concurrent agents with PS-SHA-infinity identity' },
+        { title: 'Distributed codex', status: 'done', description: '225K+ indexed components across 1,085 repos' },
+        { title: 'Edge AI cluster', status: 'done', description: '8 devices, 52 TOPS compute, full Tailscale mesh' },
+        { title: 'Cloudflare infrastructure', status: 'done', description: '205 Pages projects, 35 KV namespaces' }
       ]
     },
     {
-      name: 'Q2 2025',
+      name: 'Q1 2026',
       status: 'in-progress',
       items: [
-        { title: 'Stripe + Clerk integration', status: 'done', description: 'Auth + payments unified' },
-        { title: 'Pi cluster deployment', status: 'in-progress', description: '7 devices in production' },
-        { title: 'GitHub automation', status: 'in-progress', description: 'Self-healing workflows' },
-        { title: 'Visual language system', status: 'done', description: '11 components + animations' }
+        { title: 'ALICE QI deterministic reasoning', status: 'done', description: 'Same input, same output — every time' },
+        { title: 'Lucidia orchestration language', status: 'done', description: '10 domain agents with breath-sync timing' },
+        { title: 'RoadChain audit ledger', status: 'done', description: 'Immutable blockchain-inspired compliance logging' },
+        { title: 'Prism Console v2', status: 'in-progress', description: 'Real-time dashboard with policy enforcement' }
       ]
     },
     {
-      name: 'Q3 2025',
+      name: 'Q2 2026',
       status: 'planned',
       items: [
-        { title: 'Multi-cloud orchestration', status: 'planned', description: 'AWS, GCP, Azure support' },
-        { title: 'Advanced observability', status: 'planned', description: 'Distributed tracing + APM' },
-        { title: 'Team collaboration', status: 'planned', description: 'Multi-tenant workspaces' },
-        { title: 'Marketplace launch', status: 'planned', description: 'Component + template store' }
+        { title: 'Multi-cloud deployment', status: 'planned', description: 'AWS, GCP, Azure alongside Cloudflare + Railway' },
+        { title: 'HIPAA / SOC 2 certification', status: 'planned', description: 'Formal compliance certification for enterprise' },
+        { title: 'Team workspaces', status: 'planned', description: 'Multi-tenant organizations with role-based access' },
+        { title: 'Marketplace launch', status: 'planned', description: 'Agent templates, workflow packages, and integrations' }
       ]
     },
     {
-      name: 'Q4 2025',
+      name: 'Q3 2026',
       status: 'future',
       items: [
-        { title: 'Quantum computing preview', status: 'research', description: 'Hybrid quantum/classical agents' },
-        { title: 'Edge AI inference', status: 'future', description: 'Run models at the edge' },
-        { title: 'Blockchain integration', status: 'future', description: 'Web3 native support' },
-        { title: 'Desktop app', status: 'future', description: 'Native Mac/Windows/Linux' }
+        { title: 'FedRAMP authorization', status: 'future', description: 'Federal government deployment readiness' },
+        { title: 'Advanced edge inference', status: 'future', description: 'On-device model execution with Hailo-8 acceleration' },
+        { title: 'SDK ecosystem', status: 'future', description: 'Python, Node.js, Go, and Rust client libraries' },
+        { title: 'Desktop + mobile apps', status: 'future', description: 'Native Prism Console for Mac, Windows, iOS, Android' }
       ]
     }
   ]
@@ -150,7 +158,7 @@ export default function RoadmapPage() {
 
       {/* Stats */}
       <section className="relative z-10 px-6 py-20 max-w-6xl mx-auto border-t border-[rgba(255,255,255,0.15)]">
-        <h2 className="text-4xl font-bold mb-12 text-center">2025 Progress</h2>
+        <h2 className="text-4xl font-bold mb-12 text-center">2026 Progress</h2>
         <div className="grid md:grid-cols-4 gap-8 text-center">
           <div className="bg-[var(--br-charcoal)] border border-[var(--br-charcoal)] p-8">
             <div className="text-5xl font-bold mb-2 text-[var(--br-hot-pink)]">8</div>

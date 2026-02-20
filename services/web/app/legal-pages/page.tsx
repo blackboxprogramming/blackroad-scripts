@@ -6,6 +6,14 @@ import {
 } from '../components/BlackRoadVisuals'
 import Link from 'next/link'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Legal',
+  description: 'Terms of service, privacy policy, and cookie policy for BlackRoad OS.',
+}
+
+
 export default function LegalPages() {
   return (
     <main className="min-h-screen bg-[var(--br-deep-black)] text-white relative overflow-hidden">

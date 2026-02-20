@@ -1,5 +1,13 @@
 import { FloatingShapes, StatusEmoji, MetricEmoji, GeometricPattern, BlackRoadSymbol } from '../components/BlackRoadVisuals'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Careers',
+  description: 'Join BlackRoad OS — open roles in engineering, AI research, and infrastructure. Build the future of governed AI.',
+}
+
+
 export default function CareersPage() {
   const openRoles = [
     { title: 'Senior Full-Stack Engineer', team: 'Platform', location: 'Remote', type: 'Full-time', emoji: '⚡' },

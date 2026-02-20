@@ -1,5 +1,13 @@
 import { FloatingShapes, StatusEmoji, GeometricPattern } from '../components/BlackRoadVisuals'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Platform Comparison',
+  description: 'See how BlackRoad OS compares to other AI platforms on identity, auditability, compliance, and agent orchestration.',
+}
+
+
 export default function ComparisonTablePage() {
   const competitors = [
     { name: 'BlackRoad OS', isUs: true },

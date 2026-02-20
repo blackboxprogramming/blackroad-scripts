@@ -6,6 +6,12 @@ import {
   BlackRoadSymbol,
   PulsingDot
 } from '../components/BlackRoadVisuals'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'System Status',
+  description: 'Real-time status of BlackRoad OS services, APIs, and infrastructure.',
+}
 
 export default function StatusPage() {
   const services = [

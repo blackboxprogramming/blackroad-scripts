@@ -1,5 +1,13 @@
 import { FloatingShapes, StatusEmoji, MetricEmoji, GeometricPattern, BlackRoadSymbol } from '../components/BlackRoadVisuals'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Security',
+  description: 'BlackRoad OS security practices — encryption, access controls, compliance standards, and vulnerability management.',
+}
+
+
 export default function SecurityPage() {
   const practices = [
     {
@@ -226,7 +234,7 @@ export default function SecurityPage() {
             📧 security@blackroad.io
           </a>
           <a 
-            href="/docs/security"
+            href="/docs"
             className="px-8 py-4 border border-[rgba(255,255,255,0.3)] hover:border-white font-bold text-lg transition-all hover-lift"
           >
             Read Security Docs

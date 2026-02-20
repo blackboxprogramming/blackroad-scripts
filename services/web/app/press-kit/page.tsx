@@ -1,5 +1,13 @@
 import { FloatingShapes, BlackRoadSymbol, StatusEmoji } from '../components/BlackRoadVisuals'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Press Kit',
+  description: 'BlackRoad OS brand assets, logos, company information, and media resources for press coverage.',
+}
+
+
 export default function PressKitPage() {
   const assets = [
     { name: 'Logo (SVG)', size: '2 KB', file: 'blackroad-logo.svg' },

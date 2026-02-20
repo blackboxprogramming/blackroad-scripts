@@ -1,5 +1,13 @@
 import { FloatingShapes, StatusEmoji, GeometricPattern, BlackRoadSymbol } from '../components/BlackRoadVisuals'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Integrations',
+  description: 'Connect BlackRoad OS with your existing stack — authentication, payments, databases, monitoring, and CI/CD.',
+}
+
+
 export default function IntegrationsPage() {
   const categories = [
     {
@@ -112,7 +120,7 @@ export default function IntegrationsPage() {
           50+ integrations and counting.
         </p>
         <div className="flex gap-4">
-          <a href="/docs/integrations" className="px-8 py-4 bg-white text-black font-bold text-lg hover:bg-[rgba(255,255,255,0.85)] transition-all hover-lift">
+          <a href="/docs" className="px-8 py-4 bg-white text-black font-bold text-lg hover:bg-[rgba(255,255,255,0.85)] transition-all hover-lift">
             View Documentation
           </a>
           <a href="https://github.com/blackroad-os/integrations" className="px-8 py-4 border border-[rgba(255,255,255,0.3)] hover:border-white font-bold text-lg transition-all hover-lift">

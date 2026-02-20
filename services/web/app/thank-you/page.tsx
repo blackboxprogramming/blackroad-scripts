@@ -7,6 +7,14 @@ import {
 } from '../components/BlackRoadVisuals'
 import Link from 'next/link'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Thank You',
+  description: 'Thanks for reaching out to BlackRoad OS. We will be in touch soon.',
+}
+
+
 export default function ThankYou() {
   return (
     <main className="min-h-screen bg-[var(--br-deep-black)] text-white relative overflow-hidden flex items-center justify-center">
@@ -89,7 +97,7 @@ export default function ThankYou() {
             <Link href="/support" className="hover:text-[var(--br-hot-pink)] transition-colors">
               💬 Contact Support
             </Link>
-            <Link href="/status" className="hover:text-[var(--br-hot-pink)] transition-colors">
+            <Link href="/status-page" className="hover:text-[var(--br-hot-pink)] transition-colors">
               📊 System Status
             </Link>
           </div>

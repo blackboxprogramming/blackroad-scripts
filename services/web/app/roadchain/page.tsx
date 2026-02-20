@@ -1,5 +1,13 @@
 import { FloatingShapes, GeometricPattern, BlackRoadSymbol } from '../components/BlackRoadVisuals'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'RoadChain — Immutable Audit Ledger',
+  description: 'Blockchain-inspired audit trail recording every agent action for HIPAA, SOC 2, FERPA, and FedRAMP compliance.',
+}
+
+
 export default function RoadChainPage() {
   return (
     <main className="min-h-screen bg-[var(--br-deep-black)] text-white relative overflow-hidden">

@@ -1,5 +1,13 @@
 import { FloatingShapes, StatusEmoji, MetricEmoji, GeometricPattern } from '../components/BlackRoadVisuals'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Case Studies',
+  description: 'How organizations use BlackRoad OS to deploy compliant AI agents in fintech, healthcare, education, and government.',
+}
+
+
 export default function CaseStudiesPage() {
   const caseStudies = [
     {

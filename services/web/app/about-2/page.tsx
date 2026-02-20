@@ -1,5 +1,13 @@
 import { FloatingShapes, GeometricPattern, BlackRoadSymbol } from '../components/BlackRoadVisuals'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'About BlackRoad OS',
+  description: 'The story behind BlackRoad OS — our mission to make AI governance the default, not the afterthought.',
+}
+
+
 export default function AboutPage() {
   const stats = [
     { value: '30K+', label: 'Concurrent Agents' },

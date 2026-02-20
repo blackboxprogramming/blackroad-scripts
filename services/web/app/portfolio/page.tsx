@@ -1,6 +1,14 @@
 import Link from 'next/link'
 import { FloatingShapes, GeometricPattern, BlackRoadSymbol } from '../components/BlackRoadVisuals'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Portfolio — Alexa Amundson',
+  description: 'Selected work by Alexa Amundson — BlackRoad OS platform, 30K agent orchestration, edge AI cluster, and more.',
+}
+
+
 export default function PortfolioPage() {
   const projects = [
     {

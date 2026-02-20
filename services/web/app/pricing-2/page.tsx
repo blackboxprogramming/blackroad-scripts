@@ -1,6 +1,14 @@
 import Link from 'next/link'
 import { FloatingShapes, GeometricPattern, BlackRoadSymbol } from '../components/BlackRoadVisuals'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Pricing Plans',
+  description: 'Simple, transparent pricing for BlackRoad OS. Developer, Professional, and Enterprise tiers.',
+}
+
+
 export default function Pricing2Page() {
   const plans = [
     {

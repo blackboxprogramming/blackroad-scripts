@@ -1,5 +1,13 @@
 import { FloatingShapes, GeometricPattern, BlackRoadSymbol } from '../components/BlackRoadVisuals'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Lucidia — AI Orchestration Language',
+  description: 'Domain-specific orchestration language with 10 specialized agents and breath-sync timing for human-readable AI workflows.',
+}
+
+
 export default function LucidiaPage() {
   const agents = [
     { name: 'Physicist', focus: 'Energy modeling, force calculations, thermal analysis', lines: 867 },

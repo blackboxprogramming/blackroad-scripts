@@ -1,5 +1,13 @@
 import { ScanLine, MetricEmoji, PulsingDot, CommandPrompt } from '../components/BlackRoadVisuals'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Terminal',
+  description: 'BlackRoad OS terminal-style interface for system monitoring and agent management.',
+}
+
+
 export default function TerminalDashboard() {
   return (
     <div className="relative flex min-h-screen bg-black text-white font-mono text-sm">

@@ -1,6 +1,14 @@
 import { StatusEmoji, MetricEmoji } from '../components/BlackRoadVisuals'
 import Link from 'next/link'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Blog',
+  description: 'News, tutorials, and insights from the BlackRoad OS team on governed AI, agent orchestration, and compliance.',
+}
+
+
 export default function BlogPage() {
   const posts = [
     {

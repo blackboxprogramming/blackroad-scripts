@@ -1,5 +1,13 @@
 import { FloatingShapes, GeometricPattern, BlackRoadSymbol } from '../components/BlackRoadVisuals'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'ALICE QI — Deterministic Reasoning Engine',
+  description: 'Deterministic AI reasoning that produces the same output every time. Built for regulated decision-making in fintech, healthcare, and government.',
+}
+
+
 export default function AliceQIPage() {
   const features = [
     {

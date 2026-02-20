@@ -83,7 +83,7 @@ export default function Login2Page() {
                 <input type="checkbox" className="w-4 h-4" />
                 <span className="br-text-muted">Remember me</span>
               </label>
-              <a href="/forgot-password" className="text-white hover:underline">
+              <a href="/contact" className="text-white hover:underline">
                 Forgot password?
               </a>
             </div>
@@ -131,9 +131,9 @@ export default function Login2Page() {
         {/* Legal */}
         <div className="mt-8 text-center text-xs text-[#666]">
           By signing in, you agree to our{' '}
-          <a href="/terms" className="hover:br-text-muted">Terms</a>
+          <a href="/legal-pages" className="hover:br-text-muted">Terms</a>
           {' '}and{' '}
-          <a href="/privacy" className="hover:br-text-muted">Privacy Policy</a>
+          <a href="/legal-pages" className="hover:br-text-muted">Privacy Policy</a>
         </div>
 
       </div>

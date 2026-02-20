@@ -1,5 +1,13 @@
 import { FloatingShapes, GeometricPattern, BlackRoadSymbol } from '../components/BlackRoadVisuals'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'BlackRoad OS Platform',
+  description: 'The complete governed AI operating system — deploy 30,000 agents with cryptographic identity, deterministic reasoning, and full audit trails.',
+}
+
+
 export default function PlatformPage() {
   const features = [
     {

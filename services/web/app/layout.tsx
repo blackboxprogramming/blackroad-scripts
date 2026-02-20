@@ -5,12 +5,29 @@ import Footer from './components/Footer'
 import './globals.css'
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://blackroad-os-web.pages.dev'),
   title: {
     default: 'BlackRoad OS — The Operating System for Governed AI',
     template: '%s | BlackRoad OS',
   },
   description: 'Deploy 30,000 autonomous AI agents with cryptographic identity, deterministic reasoning, and complete audit trails. Built for fintech, healthcare, education, and government.',
-  keywords: ['AI platform', 'agent orchestration', 'governed AI', 'compliance', 'audit trails', 'BlackRoad OS'],
+  keywords: ['AI platform', 'agent orchestration', 'governed AI', 'compliance', 'audit trails', 'BlackRoad OS', 'ALICE QI', 'Lucidia', 'RoadChain', 'Prism Console'],
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    siteName: 'BlackRoad OS',
+    title: 'BlackRoad OS — The Operating System for Governed AI',
+    description: 'Deploy 30,000 autonomous AI agents with cryptographic identity, deterministic reasoning, and complete audit trails.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'BlackRoad OS — The Operating System for Governed AI',
+    description: 'Deploy 30,000 autonomous AI agents with cryptographic identity, deterministic reasoning, and complete audit trails.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default function RootLayout({

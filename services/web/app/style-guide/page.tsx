@@ -1,16 +1,22 @@
-import { 
-  FloatingShapes, 
-  AnimatedGrid, 
-  ScanLine, 
-  StatusEmoji, 
-  MetricEmoji, 
-  BlackRoadSymbol, 
+import {
+  FloatingShapes,
+  AnimatedGrid,
+  ScanLine,
+  StatusEmoji,
+  MetricEmoji,
+  BlackRoadSymbol,
   GeometricPattern,
   CommandPrompt,
   LoadingBar,
   PulsingDot,
   GlitchText
 } from '../components/BlackRoadVisuals'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Style Guide',
+  description: 'BlackRoad OS design system — typography, colors, spacing, components, and brand guidelines.',
+}
 
 export default function StyleGuidePage() {
   return (

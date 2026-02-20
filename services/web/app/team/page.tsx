@@ -1,5 +1,13 @@
 import { FloatingShapes, StatusEmoji, GeometricPattern, BlackRoadSymbol } from '../components/BlackRoadVisuals'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Team',
+  description: 'Meet the BlackRoad OS team building the future of governed AI.',
+}
+
+
 export default function TeamPage() {
   const team = [
     {

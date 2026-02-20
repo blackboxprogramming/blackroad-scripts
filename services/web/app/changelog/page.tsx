@@ -1,5 +1,13 @@
 import { ScanLine, StatusEmoji, MetricEmoji, GeometricPattern } from '../components/BlackRoadVisuals'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Changelog',
+  description: 'Release notes and version history for BlackRoad OS platform updates.',
+}
+
+
 export default function ChangelogPage() {
   const releases = [
     {

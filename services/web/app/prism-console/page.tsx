@@ -1,5 +1,13 @@
 import { FloatingShapes, GeometricPattern, BlackRoadSymbol } from '../components/BlackRoadVisuals'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Prism Console — Monitoring Dashboard',
+  description: 'Real-time monitoring dashboard for AI agent health, performance metrics, and policy enforcement.',
+}
+
+
 export default function PrismConsolePage() {
   const features = [
     {

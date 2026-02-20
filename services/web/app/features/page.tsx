@@ -1,6 +1,14 @@
 import Link from 'next/link'
 import { FloatingShapes, AnimatedGrid, GeometricPattern, BlackRoadSymbol } from '../components/BlackRoadVisuals'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Features',
+  description: 'Core capabilities of BlackRoad OS — PS-SHA-infinity identity, ALICE QI reasoning, Lucidia orchestration, Prism Console, and RoadChain audit trails.',
+}
+
+
 export default function FeaturesPage() {
   const coreFeatures = [
     {

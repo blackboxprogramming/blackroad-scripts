@@ -1,6 +1,14 @@
 import { CommandPrompt, StatusEmoji, GeometricPattern } from '../components/BlackRoadVisuals'
 import Link from 'next/link'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Documentation',
+  description: 'Getting started guides, API references, and tutorials for BlackRoad OS platform, ALICE QI, Lucidia, and RoadChain.',
+}
+
+
 export default function DocsPage() {
   const sections = [
     { title: 'Getting Started', items: ['Installation', 'Quick Start', 'Configuration'] },
