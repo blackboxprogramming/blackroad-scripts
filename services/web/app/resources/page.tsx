@@ -152,7 +152,7 @@ export default function ResourcesPage() {
             <p className="br-text-muted mb-4">
               Get up and running in under 5 minutes. Deploy your first app today.
             </p>
-            <a href="/docs" className="font-bold hover:underline">
+            <a href="/docs/getting-started" className="font-bold hover:underline">
               Start Now →
             </a>
           </div>
@@ -163,7 +163,7 @@ export default function ResourcesPage() {
             <p className="br-text-muted mb-4">
               Learn how our 27+ AI agents work together to manage your infrastructure.
             </p>
-            <a href="/docs" className="font-bold hover:underline">
+            <a href="/docs/multi-agent" className="font-bold hover:underline">
               Learn More →
             </a>
           </div>

@@ -126,7 +126,7 @@ export default function PortfolioPage() {
           <Link href="/contact" className="px-8 py-4 bg-white text-black font-bold hover:bg-[rgba(255,255,255,0.85)] transition-all no-underline">
             Get in Touch
           </Link>
-          <Link href="/about-2" className="px-8 py-4 border border-[rgba(255,255,255,0.3)] hover:border-white font-bold transition-all no-underline text-white">
+          <Link href="/about" className="px-8 py-4 border border-[rgba(255,255,255,0.3)] hover:border-white font-bold transition-all no-underline text-white">
             About BlackRoad
           </Link>
         </div>

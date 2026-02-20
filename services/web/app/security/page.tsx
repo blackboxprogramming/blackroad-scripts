@@ -234,7 +234,7 @@ export default function SecurityPage() {
             📧 security@blackroad.io
           </a>
           <a 
-            href="/docs"
+            href="/docs/security"
             className="px-8 py-4 border border-[rgba(255,255,255,0.3)] hover:border-white font-bold text-lg transition-all hover-lift"
           >
             Read Security Docs

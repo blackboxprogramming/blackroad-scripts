@@ -15,7 +15,7 @@ const navLinks = [
   { name: 'Features', href: '/features' },
   { name: 'Pricing', href: '/pricing' },
   { name: 'Docs', href: '/docs' },
-  { name: 'About', href: '/about-2' },
+  { name: 'About', href: '/about' },
 ]
 
 export default function Navigation() {
