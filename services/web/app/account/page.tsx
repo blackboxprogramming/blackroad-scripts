@@ -1,104 +1,118 @@
 'use client'
 
-export default function AccountPage() {
+import Link from 'next/link'
+import { FloatingShapes, GeometricPattern, BlackRoadSymbol } from '../components/BlackRoadVisuals'
+
+function UsageBar({ label, used, total, unit = '' }: { label: string; used: number; total: number; unit?: string }) {
+  const percentage = (used / total) * 100
+  const isHigh = percentage > 80
+
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8">Account Settings</h1>
-
-        {/* Subscription Status */}
-        <div className="bg-gray-800 rounded-lg p-6 mb-6">
-          <h2 className="text-2xl font-semibold mb-4">Subscription</h2>
-          
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <div className="text-sm text-gray-400">Current Plan</div>
-              <div className="text-xl font-semibold">Developer (Free)</div>
-            </div>
-            <div className="text-green-400 text-sm">Active</div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
-            <div>
-              <div className="text-gray-400">Concurrent Agents</div>
-              <div className="font-semibold">5 / 10</div>
-            </div>
-            <div>
-              <div className="text-gray-400">API Requests Today</div>
-              <div className="font-semibold">247 / 1,000</div>
-            </div>
-            <div>
-              <div className="text-gray-400">Storage Used</div>
-              <div className="font-semibold">0.4 GB / 1 GB</div>
-            </div>
-            <div>
-              <div className="text-gray-400">Team Members</div>
-              <div className="font-semibold">1 / 1</div>
-            </div>
-          </div>
-
-          <div className="flex gap-4">
-            <a
-              href="/pricing"
-              className="px-6 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg font-semibold transition-colors"
-            >
-              Upgrade Plan
-            </a>
-            <button
-              type="button"
-              className="px-6 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold transition-colors"
-              onClick={() => {
-                // This would call the portal API
-                window.location.href = '/api/portal'
-              }}
-            >
-              Manage Billing
-            </button>
-          </div>
-        </div>
-
-        {/* Usage Stats */}
-        <div className="bg-gray-800 rounded-lg p-6">
-          <h2 className="text-2xl font-semibold mb-4">Usage This Month</h2>
-          
-          <div className="space-y-4">
-            <UsageBar label="Agent Hours" used={42} total={100} />
-            <UsageBar label="API Calls" used={7420} total={30000} />
-            <UsageBar label="Storage" used={0.4} total={1} unit="GB" />
-          </div>
-        </div>
+    <div>
+      <div className="flex justify-between text-sm mb-2">
+        <span className="br-text-muted">{label}</span>
+        <span className={`font-bold ${isHigh ? 'text-[var(--br-hot-pink)]' : 'br-text-soft'}`}>
+          {used.toLocaleString()} / {total.toLocaleString()} {unit}
+        </span>
+      </div>
+      <div className="w-full bg-[var(--br-graphite)] h-2">
+        <div
+          className="h-2 transition-all"
+          style={{
+            width: `${Math.min(percentage, 100)}%`,
+            background: isHigh ? 'var(--br-hot-pink)' : 'var(--br-gradient-full)',
+          }}
+        />
       </div>
     </div>
   )
 }
 
-function UsageBar({ 
-  label, 
-  used, 
-  total, 
-  unit = '' 
-}: { 
-  label: string
-  used: number
-  total: number
-  unit?: string
-}) {
-  const percentage = (used / total) * 100
-  
+export default function AccountPage() {
   return (
-    <div>
-      <div className="flex justify-between text-sm mb-2">
-        <span className="text-gray-400">{label}</span>
-        <span className="font-semibold">
-          {used.toLocaleString()} / {total.toLocaleString()} {unit}
-        </span>
+    <main className="min-h-screen bg-[var(--br-deep-black)] text-white relative overflow-hidden">
+      <FloatingShapes />
+      <GeometricPattern type="dots" opacity={0.03} />
+
+      <div className="relative z-10 max-w-5xl mx-auto px-6 py-16">
+        <div className="flex items-center gap-4 mb-12">
+          <BlackRoadSymbol size="md" />
+          <div>
+            <h1 className="text-4xl font-bold">Account</h1>
+            <p className="br-text-muted">Manage your subscription and usage</p>
+          </div>
+        </div>
+
+        {/* Subscription */}
+        <section className="bg-[var(--br-charcoal)] border border-[var(--br-charcoal)] p-8 mb-6">
+          <h2 className="text-2xl font-bold mb-6">Subscription</h2>
+
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <div className="text-sm br-text-muted mb-1">Current Plan</div>
+              <div className="text-2xl font-bold">Developer</div>
+            </div>
+            <span className="px-3 py-1 text-sm font-bold bg-[rgba(0,255,100,0.15)] text-[#00ff64]">
+              ACTIVE
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+            {[
+              { label: 'Concurrent Agents', value: '5 / 10' },
+              { label: 'API Requests Today', value: '247 / 1,000' },
+              { label: 'Storage Used', value: '0.4 GB / 1 GB' },
+              { label: 'Team Members', value: '1 / 1' },
+            ].map((stat) => (
+              <div key={stat.label}>
+                <div className="text-xs br-text-muted mb-1">{stat.label}</div>
+                <div className="text-lg font-bold">{stat.value}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex gap-4">
+            <Link
+              href="/pricing"
+              className="px-6 py-3 bg-white text-black font-bold hover:bg-[rgba(255,255,255,0.85)] transition-all no-underline"
+            >
+              Upgrade Plan
+            </Link>
+            <button
+              type="button"
+              className="px-6 py-3 border border-[rgba(255,255,255,0.3)] hover:border-white font-bold transition-all"
+              onClick={() => { window.location.href = '/api/portal' }}
+            >
+              Manage Billing
+            </button>
+          </div>
+        </section>
+
+        {/* Usage */}
+        <section className="bg-[var(--br-charcoal)] border border-[var(--br-charcoal)] p-8 mb-6">
+          <h2 className="text-2xl font-bold mb-6">Usage This Month</h2>
+          <div className="space-y-5">
+            <UsageBar label="Agent Hours" used={42} total={100} />
+            <UsageBar label="API Calls" used={7420} total={30000} />
+            <UsageBar label="Storage" used={0.4} total={1} unit="GB" />
+            <UsageBar label="RoadChain Entries" used={1247} total={10000} />
+          </div>
+        </section>
+
+        {/* API Keys */}
+        <section className="bg-[var(--br-charcoal)] border border-[var(--br-charcoal)] p-8">
+          <h2 className="text-2xl font-bold mb-6">API Keys</h2>
+          <div className="bg-[var(--br-onyx)] p-4 font-mono text-sm mb-4 flex items-center justify-between">
+            <span className="br-text-muted">br_dev_****************************7f3a</span>
+            <button className="text-xs px-3 py-1 border border-[rgba(255,255,255,0.2)] hover:border-white transition-all">
+              Copy
+            </button>
+          </div>
+          <p className="text-xs br-text-muted">
+            Keep your API keys secure. Do not share them in client-side code.
+          </p>
+        </section>
       </div>
-      <div className="w-full bg-gray-700 rounded-full h-2">
-        <div
-          className="bg-blue-500 h-2 rounded-full transition-all"
-          style={{ width: `${Math.min(percentage, 100)}%` }}
-        />
-      </div>
-    </div>
+    </main>
   )
 }

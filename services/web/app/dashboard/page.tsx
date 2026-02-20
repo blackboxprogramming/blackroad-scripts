@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { FloatingShapes, GeometricPattern, BlackRoadSymbol } from '../components/BlackRoadVisuals'
 
 interface ServiceStatus {
   service: string
@@ -45,70 +46,109 @@ export default function Dashboard() {
     return () => clearInterval(interval)
   }, [])
 
+  const healthy = services.filter(s => s.status === 'ok' || s.status === 'operational').length
+  const errors = services.filter(s => s.status === 'error').length
+
   return (
-    <main style={{ minHeight: '100vh', padding: '2rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-      <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-          <h1 style={{ fontSize: '3rem', color: 'white', fontWeight: 900 }}>
-            📊 BlackRoad Dashboard
-          </h1>
-          <Link href="/" style={{ padding: '0.75rem 1.5rem', background: 'white', color: '#667eea', borderRadius: '8px', textDecoration: 'none', fontWeight: 700 }}>
-            ← Back to Home
+    <main className="min-h-screen bg-[var(--br-deep-black)] text-white relative overflow-hidden">
+      <FloatingShapes />
+      <GeometricPattern type="dots" opacity={0.03} />
+
+      <div className="relative z-10 max-w-6xl mx-auto px-6 py-12">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-10">
+          <div className="flex items-center gap-4">
+            <BlackRoadSymbol size="md" />
+            <div>
+              <h1 className="text-3xl font-bold">Dashboard</h1>
+              <p className="text-sm br-text-muted">Service health &amp; metrics</p>
+            </div>
+          </div>
+          <Link
+            href="/"
+            className="px-4 py-2 border border-[rgba(255,255,255,0.3)] hover:border-white text-sm font-bold transition-all no-underline text-white"
+          >
+            Home
           </Link>
         </div>
 
+        {/* Quick Stats */}
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          <div className="bg-[var(--br-charcoal)] border border-[var(--br-charcoal)] p-6 text-center">
+            <div className="text-4xl font-bold mb-1">{services.length}</div>
+            <div className="text-sm br-text-muted">Total Services</div>
+          </div>
+          <div className="bg-[var(--br-charcoal)] border border-[var(--br-charcoal)] p-6 text-center">
+            <div className="text-4xl font-bold mb-1 text-[#00ff64]">{healthy}</div>
+            <div className="text-sm br-text-muted">Healthy</div>
+          </div>
+          <div className="bg-[var(--br-charcoal)] border border-[var(--br-charcoal)] p-6 text-center">
+            <div className="text-4xl font-bold mb-1 text-[var(--br-hot-pink)]">{errors}</div>
+            <div className="text-sm br-text-muted">Errors</div>
+          </div>
+        </div>
+
+        {/* Services */}
         {loading ? (
-          <div style={{ textAlign: 'center', color: 'white', fontSize: '1.5rem', padding: '4rem' }}>
-            Loading services...
+          <div className="text-center py-16">
+            <div className="text-lg br-text-muted animate-pulse">Loading services...</div>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
-            {services.map((service) => (
-              <div key={service.service} style={{ padding: '2rem', background: 'white', borderRadius: '16px', boxShadow: '0 8px 25px rgba(0,0,0,0.2)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                  <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#333' }}>
-                    {service.service}
-                  </h3>
-                  <span style={{ padding: '0.5rem 1rem', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 700, background: service.status === 'ok' || service.status === 'operational' ? '#10b981' : '#ef4444', color: 'white' }}>
-                    {service.status === 'ok' || service.status === 'operational' ? '✓ OK' : '✗ ERROR'}
-                  </span>
+          <div className="grid md:grid-cols-2 gap-4 mb-8">
+            {services.map((service) => {
+              const isOk = service.status === 'ok' || service.status === 'operational'
+              return (
+                <div
+                  key={service.service}
+                  className="bg-[var(--br-charcoal)] border border-[var(--br-charcoal)] p-6 hover:border-[rgba(255,255,255,0.2)] transition-all"
+                >
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-xl font-bold">{service.service}</h3>
+                    <span
+                      className={`px-3 py-1 text-xs font-bold ${
+                        isOk
+                          ? 'bg-[rgba(0,255,100,0.15)] text-[#00ff64]'
+                          : 'bg-[rgba(255,0,102,0.15)] text-[var(--br-hot-pink)]'
+                      }`}
+                    >
+                      {isOk ? 'OPERATIONAL' : 'ERROR'}
+                    </span>
+                  </div>
+                  <div className="space-y-1 text-sm br-text-muted">
+                    {service.timestamp && (
+                      <div>Last check: {new Date(service.timestamp).toLocaleTimeString()}</div>
+                    )}
+                    {service.uptime !== undefined && (
+                      <div>Uptime: {Math.floor(service.uptime)}s</div>
+                    )}
+                    {service.memory && (
+                      <div>Memory: {service.memory.used}MB / {service.memory.total}MB</div>
+                    )}
+                  </div>
                 </div>
-
-                <div style={{ color: '#666', fontSize: '0.875rem' }}>
-                  {service.timestamp && (
-                    <div style={{ marginBottom: '0.5rem' }}>🕐 {new Date(service.timestamp).toLocaleTimeString()}</div>
-                  )}
-                  {service.uptime !== undefined && (
-                    <div style={{ marginBottom: '0.5rem' }}>⏱️ Uptime: {Math.floor(service.uptime)}s</div>
-                  )}
-                  {service.memory && (
-                    <div>💾 Memory: {service.memory.used}MB / {service.memory.total}MB</div>
-                  )}
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
 
-        <div style={{ marginTop: '3rem', padding: '2rem', background: 'rgba(255,255,255,0.1)', borderRadius: '16px', backdropFilter: 'blur(10px)' }}>
-          <h2 style={{ fontSize: '2rem', color: 'white', fontWeight: 800, marginBottom: '1rem' }}>🎯 Quick Stats</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '3rem', fontWeight: 900, color: 'white' }}>{services.length}</div>
-              <div style={{ color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>Total Services</div>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '3rem', fontWeight: 900, color: '#10b981' }}>
-                {services.filter(s => s.status === 'ok' || s.status === 'operational').length}
-              </div>
-              <div style={{ color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>Healthy</div>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '3rem', fontWeight: 900, color: '#ef4444' }}>
-                {services.filter(s => s.status === 'error').length}
-              </div>
-              <div style={{ color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>Errors</div>
-            </div>
+        {/* Quick Links */}
+        <div className="border-t border-[rgba(255,255,255,0.08)] pt-8">
+          <h2 className="text-lg font-bold mb-4">Quick Links</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { label: 'Account', href: '/account' },
+              { label: 'API Docs', href: '/api-docs' },
+              { label: 'Status Page', href: '/status-page' },
+              { label: 'Settings', href: '/settings-page' },
+            ].map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                className="bg-[var(--br-charcoal)] border border-[var(--br-charcoal)] hover:border-white p-4 text-center font-bold text-sm transition-all no-underline text-white"
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
         </div>
       </div>
