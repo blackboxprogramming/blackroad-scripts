@@ -1,9 +1,16 @@
 import type { Metadata } from 'next'
 import { ClerkProvider } from '@clerk/nextjs'
+import Navigation from './components/Navigation'
+import Footer from './components/Footer'
+import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'BlackRoad OS',
-  description: 'Operator-controlled • Local-first • Sovereign',
+  title: {
+    default: 'BlackRoad OS — The Operating System for Governed AI',
+    template: '%s | BlackRoad OS',
+  },
+  description: 'Deploy 30,000 autonomous AI agents with cryptographic identity, deterministic reasoning, and complete audit trails. Built for fintech, healthcare, education, and government.',
+  keywords: ['AI platform', 'agent orchestration', 'governed AI', 'compliance', 'audit trails', 'BlackRoad OS'],
 }
 
 export default function RootLayout({
@@ -16,11 +23,15 @@ export default function RootLayout({
       <html lang="en">
         <body style={{
           margin: 0,
-          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-          backgroundColor: '#0a0a0a',
-          color: '#e0e0e0'
+          fontFamily: 'var(--br-font)',
+          backgroundColor: 'var(--br-deep-black)',
+          color: 'var(--br-cream)',
         }}>
-          {children}
+          <Navigation />
+          <div style={{ paddingTop: '64px' }}>
+            {children}
+          </div>
+          <Footer />
         </body>
       </html>
     </ClerkProvider>

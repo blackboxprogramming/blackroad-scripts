@@ -1,169 +1,296 @@
-'use client'
-
 import Link from 'next/link'
-import { useUser, SignInButton, UserButton } from '@clerk/nextjs'
+import { FloatingShapes, GeometricPattern, BlackRoadSymbol } from './components/BlackRoadVisuals'
 
 export default function Home() {
-  const { user, isSignedIn, isLoaded } = useUser()
+  const products = [
+    {
+      name: 'BlackRoad OS Platform',
+      tagline: 'The operating system for governed AI',
+      description: 'Deploy 30,000 autonomous agents with cryptographic identity, deterministic reasoning, and complete audit trails.',
+      href: '/platform',
+    },
+    {
+      name: 'ALICE QI',
+      tagline: 'AI that shows its work',
+      description: 'Deterministic reasoning for risk intelligence, portfolio analytics, and quantitative modeling. Every decision is explainable.',
+      href: '/alice-qi',
+    },
+    {
+      name: 'Lucidia',
+      tagline: 'Orchestrate AI like you\'d coordinate humans',
+      description: '10 domain expert agents coordinated through plain language workflows. No coding expertise required.',
+      href: '/lucidia',
+    },
+    {
+      name: 'Prism Console',
+      tagline: 'Mission control for 30,000 agents',
+      description: 'Real-time monitoring, policy enforcement, compliance visualization, and infrastructure orchestration.',
+      href: '/prism-console',
+    },
+    {
+      name: 'RoadChain',
+      tagline: 'Immutable proof for every AI decision',
+      description: 'Blockchain-based audit ledger with tamper-evident cryptographic proof. Built for regulators.',
+      href: '/roadchain',
+    },
+  ]
+
+  const stats = [
+    { value: '30K+', label: 'Concurrent Agents' },
+    { value: '225K+', label: 'Components Indexed' },
+    { value: '1,085', label: 'Repositories' },
+    { value: '15', label: 'GitHub Organizations' },
+    { value: '8', label: 'Physical Devices' },
+    { value: '205', label: 'Cloudflare Projects' },
+  ]
+
+  const industries = [
+    { name: 'Fintech', description: 'Fraud detection, portfolio analytics, risk scoring with complete audit trails.' },
+    { name: 'Healthcare', description: 'HIPAA-compliant AI agents for clinical workflows and patient data.' },
+    { name: 'Education', description: 'AI tutoring at scale with transparent governance and student protection.' },
+    { name: 'Government', description: 'Policy enforcement and identity verification with full accountability.' },
+  ]
+
+  const testimonials = [
+    {
+      quote: 'BlackRoad OS is the only AI platform our compliance team actually approved. The PS-SHA-infinity audit trails are exactly what regulators want to see.',
+      author: 'CTO, Fortune 500 Financial Institution',
+    },
+    {
+      quote: 'We deployed 5,000 AI agents for clinical decision support. BlackRoad\'s deterministic reasoning gives us the explainability HIPAA requires.',
+      author: 'Chief Medical Information Officer',
+    },
+    {
+      quote: 'Finally, an AI platform that doesn\'t treat governance as an afterthought. Prism Console gives us complete visibility into every agent decision.',
+      author: 'VP of Engineering, Government Contractor',
+    },
+  ]
 
   return (
-    <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%)', position: 'relative' }}>
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(244, 143, 177, 0.3) 0%, transparent 50%)' }} />
-      
-      <div style={{ maxWidth: '1200px', width: '100%', padding: '3rem', backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '24px', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', position: 'relative', zIndex: 1 }}>
-        <h1 style={{ fontSize: '4.5rem', marginBottom: '1rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textAlign: 'center', fontWeight: 900, letterSpacing: '-0.02em' }}>BlackRoad OS</h1>
-        
-        <p style={{ fontSize: '1.5rem', textAlign: 'center', color: '#667eea', marginBottom: '2rem', fontWeight: 600 }}>Operator-controlled • Local-first • Sovereign</p>
+    <main className="min-h-screen bg-[var(--br-deep-black)] text-white relative overflow-hidden">
+      <FloatingShapes />
+      <GeometricPattern type="dots" opacity={0.03} />
 
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '3rem' }}>
-          {!isLoaded ? (
-            <div style={{ padding: '1rem 2rem', color: '#667eea', fontWeight: 600 }}>Loading...</div>
-          ) : !isSignedIn ? (
-            <>
-              <SignInButton mode="modal">
-                <button style={{ padding: '1rem 2.5rem', fontSize: '1.125rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: 700, boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)', transform: 'translateY(0)', transition: 'all 0.3s' }}>Sign In</button>
-              </SignInButton>
-              <SignInButton mode="modal">
-                <button style={{ padding: '1rem 2.5rem', fontSize: '1.125rem', background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: 700, boxShadow: '0 4px 15px rgba(240, 147, 251, 0.4)' }}>Get Started</button>
-              </SignInButton>
-            </>
-          ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem 2rem', background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', borderRadius: '12px', boxShadow: '0 4px 15px rgba(168, 237, 234, 0.3)' }}>
-              <span style={{ color: '#4a148c', fontWeight: 700 }}>👋 Welcome, {user?.firstName || user?.emailAddresses[0]?.emailAddress}!</span>
-              <UserButton afterSignOutUrl="/" />
-            </div>
-          )}
+      {/* Hero */}
+      <section className="relative z-10 px-6 py-28 max-w-7xl mx-auto">
+        <div className="mb-6">
+          <BlackRoadSymbol size="lg" />
         </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
-          <div style={{ padding: '2rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderRadius: '16px', color: 'white', boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎯</div>
-            <h3 style={{ fontSize: '1.5rem', marginBottom: '0.75rem', fontWeight: 800 }}>Operator-Controlled</h3>
-            <p style={{ opacity: 0.95, lineHeight: '1.6', fontSize: '1.05rem' }}>Full control over your infrastructure. No black boxes, no vendor lock-in.</p>
-          </div>
-          <div style={{ padding: '2rem', background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', borderRadius: '16px', color: 'white', boxShadow: '0 8px 25px rgba(240, 147, 251, 0.3)' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔒</div>
-            <h3 style={{ fontSize: '1.5rem', marginBottom: '0.75rem', fontWeight: 800 }}>Local-First</h3>
-            <p style={{ opacity: 0.95, lineHeight: '1.6', fontSize: '1.05rem' }}>Your data stays on your hardware. Privacy and security by design.</p>
-          </div>
-          <div style={{ padding: '2rem', background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', borderRadius: '16px', color: 'white', boxShadow: '0 8px 25px rgba(79, 172, 254, 0.3)' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚡</div>
-            <h3 style={{ fontSize: '1.5rem', marginBottom: '0.75rem', fontWeight: 800 }}>Sovereign</h3>
-            <p style={{ opacity: 0.95, lineHeight: '1.6', fontSize: '1.05rem' }}>Own your stack. Build and deploy on your terms, your way.</p>
-          </div>
-        </div>
-
-        <div style={{ marginBottom: '3rem', padding: '3rem', background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)', borderRadius: '20px', boxShadow: '0 8px 25px rgba(252, 182, 159, 0.3)' }}>
-          <h2 style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '1rem', background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 900 }}>Simple Pricing</h2>
-          <p style={{ fontSize: '1.25rem', textAlign: 'center', color: '#8b4513', marginBottom: '3rem', fontWeight: 600 }}>Get started with BlackRoad OS Professional</p>
-          <div style={{ maxWidth: '400px', margin: '0 auto', padding: '2.5rem', background: 'white', borderRadius: '16px', boxShadow: '0 12px 40px rgba(0,0,0,0.15)', textAlign: 'center' }}>
-            <h3 style={{ fontSize: '1.75rem', marginBottom: '1rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 800 }}>Professional</h3>
-            <div style={{ fontSize: '4rem', fontWeight: 900, marginBottom: '0.5rem', background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>$97<span style={{ fontSize: '1.5rem', color: '#999' }}>/mo</span></div>
-            <p style={{ color: '#666', marginBottom: '2rem', fontSize: '1.05rem' }}>Full access to BlackRoad OS infrastructure</p>
-            <ul style={{ textAlign: 'left', listStyle: 'none', padding: 0, marginBottom: '2rem' }}>
-              <li style={{ padding: '0.75rem 0', color: '#333', fontSize: '1.05rem', fontWeight: 600 }}>✓ Unlimited deployments</li>
-              <li style={{ padding: '0.75rem 0', color: '#333', fontSize: '1.05rem', fontWeight: 600 }}>✓ 24/7 infrastructure access</li>
-              <li style={{ padding: '0.75rem 0', color: '#333', fontSize: '1.05rem', fontWeight: 600 }}>✓ Priority support</li>
-              <li style={{ padding: '0.75rem 0', color: '#333', fontSize: '1.05rem', fontWeight: 600 }}>✓ Advanced monitoring</li>
-            </ul>
-            <Link href={user ? '/checkout' : '#'} onClick={(e) => !user && e.preventDefault()}>
-              <button disabled={!user} style={{ width: '100%', padding: '1.25rem 2rem', fontSize: '1.25rem', background: user ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : '#ccc', color: 'white', border: 'none', borderRadius: '12px', cursor: user ? 'pointer' : 'not-allowed', fontWeight: 800, boxShadow: user ? '0 6px 20px rgba(102, 126, 234, 0.4)' : 'none' }}>
-                {user ? 'Subscribe Now 🚀' : 'Sign In to Subscribe'}
-              </button>
-            </Link>
-          </div>
-        </div>
-
-        <div style={{ marginTop: '3rem', padding: '2rem', background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', borderRadius: '16px', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '2rem', marginBottom: '1rem', color: '#4a148c', fontWeight: 800 }}>Stay Updated</h2>
-          <p style={{ color: '#6a1b9a', marginBottom: '1.5rem', fontSize: '1.05rem' }}>Get the latest updates and insights delivered to your inbox</p>
-          <div style={{ display: 'flex', gap: '0.5rem', maxWidth: '500px', margin: '0 auto' }}>
-            <input
-              type="email"
-              placeholder="your@email.com"
-              id="newsletter-email"
-              style={{ flex: 1, padding: '1rem', borderRadius: '8px', border: '2px solid #667eea', fontSize: '1rem' }}
-            />
-            <button
-              onClick={() => {
-                const input = document.getElementById('newsletter-email') as HTMLInputElement
-                if (input.value) {
-                  fetch('/api/newsletter', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: input.value })
-                  }).then(() => {
-                    alert('✅ Subscribed successfully!')
-                    input.value = ''
-                  })
-                }
-              }}
-              style={{ padding: '1rem 2rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 700, fontSize: '1rem' }}
-            >
-              Subscribe
-            </button>
-          </div>
-        </div>
-
-        <div style={{ marginTop: '3rem', padding: '3rem', background: 'white', borderRadius: '20px', boxShadow: '0 8px 25px rgba(0,0,0,0.15)' }}>
-          <h2 style={{ fontSize: '2.5rem', textAlign: 'center', marginBottom: '2rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 900 }}>
-            What Our Users Say
-          </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
-            <div style={{ padding: '2rem', background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%)', borderRadius: '12px' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⭐⭐⭐⭐⭐</div>
-              <p style={{ fontSize: '1.05rem', marginBottom: '1rem', color: '#333', lineHeight: '1.6' }}>
-                "BlackRoad OS gave us full control over our infrastructure. No vendor lock-in!"
-              </p>
-              <div style={{ fontWeight: 700, color: '#667eea' }}>— Sarah Chen, CTO</div>
-            </div>
-            <div style={{ padding: '2rem', background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 50%)', borderRadius: '12px' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⭐⭐⭐⭐⭐</div>
-              <p style={{ fontSize: '1.05rem', marginBottom: '1rem', color: '#333', lineHeight: '1.6' }}>
-                "Local-first architecture means our data never leaves our servers. Perfect for compliance."
-              </p>
-              <div style={{ fontWeight: 700, color: '#f093fb' }}>— Marcus Rodriguez, VP Engineering</div>
-            </div>
-            <div style={{ padding: '2rem', background: 'linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 50%)', borderRadius: '12px' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⭐⭐⭐⭐⭐</div>
-              <p style={{ fontSize: '1.05rem', marginBottom: '1rem', color: '#333', lineHeight: '1.6' }}>
-                "Deployed in minutes. Running for months. Zero downtime. This is how infrastructure should be."
-              </p>
-              <div style={{ fontWeight: 700, color: '#4facfe' }}>— Alex Thompson, DevOps Lead</div>
-            </div>
-          </div>
-        </div>
-
-        <div style={{ marginTop: '3rem', padding: '3rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderRadius: '20px', color: 'white' }}>
-          <h2 style={{ fontSize: '2.5rem', textAlign: 'center', marginBottom: '2rem', fontWeight: 900 }}>
-            Frequently Asked Questions
-          </h2>
-          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-            <div style={{ marginBottom: '2rem', padding: '1.5rem', background: 'rgba(255,255,255,0.1)', borderRadius: '12px', backdropFilter: 'blur(10px)' }}>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.75rem' }}>What makes BlackRoad OS different?</h3>
-              <p style={{ opacity: 0.95, lineHeight: '1.6' }}>Complete sovereignty. You own your hardware, your data, your infrastructure. No cloud lock-in, no vendor dependencies.</p>
-            </div>
-            <div style={{ marginBottom: '2rem', padding: '1.5rem', background: 'rgba(255,255,255,0.1)', borderRadius: '12px', backdropFilter: 'blur(10px)' }}>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.75rem' }}>Can I deploy on my own hardware?</h3>
-              <p style={{ opacity: 0.95, lineHeight: '1.6' }}>Absolutely! BlackRoad OS runs on Raspberry Pi, bare metal servers, VMs, or any Linux-compatible hardware.</p>
-            </div>
-            <div style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.1)', borderRadius: '12px', backdropFilter: 'blur(10px)' }}>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.75rem' }}>What about support?</h3>
-              <p style={{ opacity: 0.95, lineHeight: '1.6' }}>Professional plan includes 24/7 support, priority updates, and direct access to our engineering team.</p>
-            </div>
-          </div>
-        </div>
-
-        <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-          <Link href="/dashboard" style={{ display: 'inline-block', padding: '1rem 2rem', background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', color: 'white', borderRadius: '12px', textDecoration: 'none', fontWeight: 700, boxShadow: '0 4px 15px rgba(79, 172, 254, 0.4)' }}>
-            📊 View System Dashboard
+        <h1 className="text-7xl font-black mb-6 leading-tight max-w-4xl">
+          <span style={{ background: 'var(--br-gradient-full)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            The Operating System
+          </span>
+          <br />
+          for Governed AI
+        </h1>
+        <p className="text-2xl br-text-soft mb-4 max-w-3xl leading-relaxed">
+          Deploy 30,000 autonomous agents with cryptographic identity, deterministic reasoning,
+          and complete audit trails. Built for enterprises that can't afford chaos.
+        </p>
+        <p className="text-lg br-text-muted mb-10 max-w-2xl">
+          Fintech. Healthcare. Education. Government. Industries where compliance isn't optional.
+        </p>
+        <div className="flex gap-4 flex-wrap">
+          <Link href="/signup" className="px-8 py-4 bg-white text-black font-bold text-lg hover:bg-[rgba(255,255,255,0.85)] transition-all hover-lift no-underline">
+            Start Free Trial
+          </Link>
+          <Link href="/contact" className="px-8 py-4 border border-[rgba(255,255,255,0.3)] hover:border-white font-bold text-lg transition-all hover-lift no-underline text-white">
+            Schedule Demo
+          </Link>
+          <Link href="/docs" className="px-8 py-4 border border-[rgba(255,255,255,0.3)] hover:border-white font-bold text-lg transition-all hover-lift no-underline text-white">
+            Documentation
           </Link>
         </div>
+      </section>
 
-        <footer style={{ marginTop: '3rem', paddingTop: '1.5rem', borderTop: '2px solid #eee', fontSize: '0.875rem', color: '#999', textAlign: 'center', fontWeight: 600 }}>
-          BlackRoad Infrastructure · {new Date().getFullYear()}
-        </footer>
-      </div>
+      {/* Three Pillars */}
+      <section className="relative z-10 px-6 py-20 max-w-7xl mx-auto border-t border-[rgba(255,255,255,0.08)]">
+        <div className="grid md:grid-cols-3 gap-8">
+          <div className="bg-[var(--br-charcoal)] border border-[var(--br-charcoal)] p-8 hover:border-white transition-all hover-lift">
+            <div className="text-4xl font-bold text-[var(--br-hot-pink)] mb-4">1</div>
+            <h3 className="text-xl font-bold mb-3">Who made this decision?</h3>
+            <p className="br-text-muted text-sm">Every agent has cryptographic identity through PS-SHA-infinity. Persistent, tamper-evident hash chains that prove provenance.</p>
+          </div>
+          <div className="bg-[var(--br-charcoal)] border border-[var(--br-charcoal)] p-8 hover:border-white transition-all hover-lift">
+            <div className="text-4xl font-bold text-[var(--br-hot-pink)] mb-4">2</div>
+            <h3 className="text-xl font-bold mb-3">Why was it made?</h3>
+            <p className="br-text-muted text-sm">Deterministic reasoning engines show their work. Same input, same output, every time. Explainable by design.</p>
+          </div>
+          <div className="bg-[var(--br-charcoal)] border border-[var(--br-charcoal)] p-8 hover:border-white transition-all hover-lift">
+            <div className="text-4xl font-bold text-[var(--br-hot-pink)] mb-4">3</div>
+            <h3 className="text-xl font-bold mb-3">Can we prove it to regulators?</h3>
+            <p className="br-text-muted text-sm">RoadChain blockchain audit ledger records every action. Tamper-evident, regulator-ready, exportable.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats */}
+      <section className="relative z-10 px-6 py-16 max-w-7xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {stats.map((stat, i) => (
+            <div key={i} className="bg-[var(--br-charcoal)] border border-[var(--br-charcoal)] p-5 text-center hover:border-white transition-all">
+              <div className="text-2xl font-bold mb-1">{stat.value}</div>
+              <div className="text-xs br-text-muted">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Products */}
+      <section className="relative z-10 px-6 py-20 max-w-7xl mx-auto border-t border-[rgba(255,255,255,0.08)]">
+        <h2 className="text-4xl font-bold mb-4">The Platform</h2>
+        <p className="text-xl br-text-muted mb-12 max-w-3xl">
+          Five integrated products that work as one system.
+        </p>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {products.map((product, i) => (
+            <Link
+              key={i}
+              href={product.href}
+              className="bg-[var(--br-charcoal)] border border-[var(--br-charcoal)] p-8 hover:border-white transition-all hover-lift block no-underline text-white"
+            >
+              <h3 className="text-xl font-bold mb-1">{product.name}</h3>
+              <p className="text-[var(--br-hot-pink)] text-sm mb-3">{product.tagline}</p>
+              <p className="br-text-muted text-sm">{product.description}</p>
+            </Link>
+          ))}
+          <Link
+            href="/features"
+            className="bg-[var(--br-charcoal)] border border-[var(--br-charcoal)] p-8 hover:border-white transition-all hover-lift flex items-center justify-center no-underline text-white"
+          >
+            <span className="text-lg font-bold">View All Features &rarr;</span>
+          </Link>
+        </div>
+      </section>
+
+      {/* Industries */}
+      <section className="relative z-10 px-6 py-20 max-w-7xl mx-auto border-t border-[rgba(255,255,255,0.08)]">
+        <h2 className="text-4xl font-bold mb-4">Built for Regulated Industries</h2>
+        <p className="text-xl br-text-muted mb-12 max-w-3xl">
+          Where compliance isn't optional and AI decisions must be provable.
+        </p>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {industries.map((industry, i) => (
+            <div key={i} className="bg-[var(--br-charcoal)] border border-[var(--br-charcoal)] p-6 hover:border-white transition-all">
+              <h3 className="font-bold mb-2">{industry.name}</h3>
+              <p className="br-text-muted text-sm">{industry.description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Code Preview */}
+      <section className="relative z-10 px-6 py-20 max-w-7xl mx-auto border-t border-[rgba(255,255,255,0.08)]">
+        <h2 className="text-4xl font-bold mb-8">Ship in Minutes</h2>
+        <div className="grid md:grid-cols-2 gap-8">
+          <div className="bg-[var(--br-charcoal)] border border-[var(--br-charcoal)] p-8 font-mono text-sm">
+            <div className="text-xs br-text-muted mb-4">Python SDK</div>
+            <pre className="br-text-muted whitespace-pre overflow-x-auto">{`from blackroad import BlackRoadOS
+
+br = BlackRoadOS(api_key="your_key")
+
+# Spawn agent with cryptographic identity
+agent = br.agents.spawn(
+    runtime_type="llm_brain",
+    capabilities=["reasoning", "planning"]
+)
+
+# Execute task
+result = agent.execute(
+    "Analyze this financial transaction"
+)
+
+# Every action is auditable
+trail = agent.get_roadchain_events()`}</pre>
+          </div>
+          <div className="bg-[var(--br-charcoal)] border border-[var(--br-charcoal)] p-8 font-mono text-sm">
+            <div className="text-xs br-text-muted mb-4">Lucidia Workflow</div>
+            <pre className="br-text-muted whitespace-pre overflow-x-auto">{`workflow: fraud_detection
+trigger: new_transaction
+
+steps:
+  - agent: analyst
+    task: "Score transaction risk"
+    output: risk_score
+
+  - agent: mathematician
+    task: "Calculate confidence"
+    output: confidence
+
+  - decision:
+      if: risk_score > 0.75
+      then: block_and_alert
+      else: approve
+
+# Every step logged to RoadChain
+# Every decision explainable`}</pre>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="relative z-10 px-6 py-20 max-w-7xl mx-auto border-t border-[rgba(255,255,255,0.08)]">
+        <h2 className="text-4xl font-bold mb-12">What Leaders Say</h2>
+        <div className="grid md:grid-cols-3 gap-8">
+          {testimonials.map((t, i) => (
+            <div key={i} className="bg-[var(--br-charcoal)] border border-[var(--br-charcoal)] p-8">
+              <p className="br-text-soft text-sm leading-relaxed mb-6 italic">"{t.quote}"</p>
+              <p className="text-[var(--br-hot-pink)] text-sm font-bold">{t.author}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Pricing Preview */}
+      <section className="relative z-10 px-6 py-20 max-w-7xl mx-auto border-t border-[rgba(255,255,255,0.08)]">
+        <h2 className="text-4xl font-bold mb-4 text-center">Start Free. Scale When Ready.</h2>
+        <p className="text-xl br-text-muted mb-12 text-center max-w-2xl mx-auto">
+          10 free agents to start. Up to 30,000 on Enterprise.
+        </p>
+        <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          <div className="bg-[var(--br-charcoal)] border border-[var(--br-charcoal)] p-8 text-center">
+            <h3 className="text-xl font-bold mb-2">Developer</h3>
+            <div className="text-3xl font-bold mb-2">Free</div>
+            <p className="br-text-muted text-sm mb-4">10 agents, community support</p>
+            <Link href="/signup" className="text-[var(--br-hot-pink)] text-sm font-bold no-underline">Get Started &rarr;</Link>
+          </div>
+          <div className="bg-[var(--br-charcoal)] border border-[var(--br-hot-pink)] p-8 text-center">
+            <h3 className="text-xl font-bold mb-2">Professional</h3>
+            <div className="text-3xl font-bold mb-2">$499/mo</div>
+            <p className="br-text-muted text-sm mb-4">1,000 agents, full platform</p>
+            <Link href="/pricing" className="text-[var(--br-hot-pink)] text-sm font-bold no-underline">View Details &rarr;</Link>
+          </div>
+          <div className="bg-[var(--br-charcoal)] border border-[var(--br-charcoal)] p-8 text-center">
+            <h3 className="text-xl font-bold mb-2">Enterprise</h3>
+            <div className="text-3xl font-bold mb-2">Custom</div>
+            <p className="br-text-muted text-sm mb-4">30K+ agents, dedicated infra</p>
+            <Link href="/contact" className="text-[var(--br-hot-pink)] text-sm font-bold no-underline">Contact Sales &rarr;</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="relative z-10 px-6 py-24 max-w-7xl mx-auto text-center border-t border-[rgba(255,255,255,0.08)]">
+        <h2 className="text-5xl font-bold mb-6">
+          Stop hoping your AI is compliant.
+          <br />
+          <span style={{ background: 'var(--br-gradient-full)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            Start proving it.
+          </span>
+        </h2>
+        <p className="text-xl br-text-muted mb-10 max-w-2xl mx-auto">
+          Cryptographic identity. Deterministic reasoning. Immutable audit trails.
+          BlackRoad OS answers the three questions regulators always ask.
+        </p>
+        <div className="flex gap-4 justify-center flex-wrap">
+          <Link href="/signup" className="px-10 py-5 bg-white text-black font-bold text-lg hover:bg-[rgba(255,255,255,0.85)] transition-all hover-lift no-underline">
+            Start Free Trial
+          </Link>
+          <Link href="/contact" className="px-10 py-5 border border-[rgba(255,255,255,0.3)] hover:border-white font-bold text-lg transition-all hover-lift no-underline text-white">
+            Talk to Sales
+          </Link>
+        </div>
+      </section>
     </main>
   )
 }

@@ -46,31 +46,39 @@ export function FloatingShapes() {
   )
 }
 
-export function StatusEmoji({ status }: { status: 'online' | 'loading' | 'error' | 'success' }) {
+export function StatusEmoji({ status, className }: { status: 'online' | 'loading' | 'error' | 'success' | 'green' | 'yellow' | 'red'; className?: string }) {
   const emoji = {
     online: '🟢',
     loading: '🟡',
     error: '🔴',
-    success: '✅'
+    success: '✅',
+    green: '🟢',
+    yellow: '🟡',
+    red: '🔴'
   }[status]
   
   return <span className="inline-block animate-pulse">{emoji}</span>
 }
 
-export function MetricEmoji({ type }: { type: 'cpu' | 'memory' | 'disk' | 'network' | 'speed' | 'uptime' }) {
+export function MetricEmoji({ type }: { type: 'cpu' | 'memory' | 'disk' | 'network' | 'speed' | 'uptime' | 'lightning' | 'cd' | 'globe' | 'rocket' | 'clock' }) {
   const emoji = {
     cpu: '⚡',
     memory: '💾',
     disk: '💿',
     network: '🌐',
     speed: '🚀',
-    uptime: '⏱️'
+    uptime: '⏱️',
+    lightning: '⚡',
+    cd: '💿',
+    globe: '🌐',
+    rocket: '🚀',
+    clock: '⏱️'
   }[type]
   
   return <span className="mr-2">{emoji}</span>
 }
 
-export function BlackRoadSymbol({ variant = 'default' }: { variant?: 'default' | 'minimal' | 'animated' }) {
+export function BlackRoadSymbol({ variant = 'default', size, className }: { variant?: 'default' | 'minimal' | 'animated'; size?: number | string; className?: string }) {
   if (variant === 'minimal') {
     return <span className="font-bold text-2xl">●━━</span>
   }
@@ -94,7 +102,7 @@ export function BlackRoadSymbol({ variant = 'default' }: { variant?: 'default' |
   )
 }
 
-export function GeometricPattern({ type = 'grid' }: { type?: 'grid' | 'dots' | 'lines' | 'diagonal' }) {
+export function GeometricPattern({ type = 'grid', opacity }: { type?: 'grid' | 'dots' | 'lines' | 'diagonal'; opacity?: number }) {
   if (type === 'dots') {
     return (
       <div className="fixed inset-0 pointer-events-none opacity-5">
@@ -129,11 +137,11 @@ export function GeometricPattern({ type = 'grid' }: { type?: 'grid' | 'dots' | '
   return <AnimatedGrid />
 }
 
-export function CommandPrompt({ children }: { children: React.ReactNode }) {
+export function CommandPrompt({ children, command }: { children?: React.ReactNode; command?: string }) {
   return (
     <div className="font-mono text-sm">
       <span className="text-green-400">❯</span>
-      <span className="ml-2">{children}</span>
+      <span className="ml-2">{children ?? command}</span>
       <span className="animate-blink ml-1">▋</span>
     </div>
   )
@@ -173,21 +181,22 @@ export function PulsingDot({ color = 'white' }: { color?: string }) {
   )
 }
 
-export function GlitchText({ children }: { children: string }) {
+export function GlitchText({ children, text }: { children?: string; text?: string }) {
+  const content = children ?? text ?? ''
   return (
     <span className="relative inline-block">
-      <span className="relative z-10">{children}</span>
-      <span 
+      <span className="relative z-10">{content}</span>
+      <span
         className="absolute top-0 left-0 text-red-500 animate-glitch-1 opacity-80"
         aria-hidden="true"
       >
-        {children}
+        {content}
       </span>
-      <span 
+      <span
         className="absolute top-0 left-0 text-blue-500 animate-glitch-2 opacity-80"
         aria-hidden="true"
       >
-        {children}
+        {content}
       </span>
     </span>
   )

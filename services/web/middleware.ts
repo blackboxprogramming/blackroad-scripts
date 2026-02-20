@@ -6,7 +6,14 @@ const isProtectedRoute = createRouteMatcher([
   '/api/user(.*)',
 ])
 
+const isPublicRoute = createRouteMatcher([
+  '/api/gateway(.*)',
+  '/api/health(.*)',
+  '/api/version(.*)',
+])
+
 export default clerkMiddleware(async (auth, req) => {
+  if (isPublicRoute(req)) return
   if (isProtectedRoute(req)) await auth.protect()
 })
 

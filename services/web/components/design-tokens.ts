@@ -7,7 +7,8 @@ export const colors = {
     electricMagenta: '#FF006B',
     deepMagenta: '#D600AA',
     vividPurple: '#7700FF',
-    cyberBlue: '#0066FF'
+    cyberBlue: '#0066FF',
+    purple: '#7700FF'
   },
   secondary: {
     sunrise: '#FF9D00',
@@ -36,7 +37,10 @@ export const colors = {
 export const gradients = {
   br: 'linear-gradient(180deg, #FF9D00 0%, #FF6B00 25%, #FF0066 75%, #FF006B 100%)',
   os: 'linear-gradient(180deg, #FF006B 0%, #D600AA 25%, #7700FF 75%, #0066FF 100%)',
-  full: 'linear-gradient(180deg, #FF9D00 0%, #FF6B00 14%, #FF0066 28%, #FF006B 42%, #D600AA 57%, #7700FF 71%, #0066FF 100%)'
+  full: 'linear-gradient(180deg, #FF9D00 0%, #FF6B00 14%, #FF0066 28%, #FF006B 42%, #D600AA 57%, #7700FF 71%, #0066FF 100%)',
+  primary: 'linear-gradient(180deg, #FF9D00 0%, #FF6B00 25%, #FF0066 75%, #FF006B 100%)',
+  secondary: 'linear-gradient(180deg, #FF006B 0%, #D600AA 25%, #7700FF 75%, #0066FF 100%)',
+  tertiary: 'linear-gradient(180deg, #FF9D00 0%, #FF6B00 14%, #FF0066 28%, #FF006B 42%, #D600AA 57%, #7700FF 71%, #0066FF 100%)'
 }
 
 export const spacing = {

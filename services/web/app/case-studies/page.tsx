@@ -32,7 +32,7 @@ export default function CaseStudiesPage() {
         { metric: '5', label: 'Cloud regions', icon: '🌍' },
         { metric: '0', label: 'Security incidents', icon: '🛡️' }
       ],
-      quote: 'BlackRoad's compliance automation saved us months of work. The security features gave our auditors confidence, and we passed SOC2 on the first try.',
+      quote: "BlackRoad's compliance automation saved us months of work. The security features gave our auditors confidence, and we passed SOC2 on the first try.",
       author: 'Michael Rodriguez, Head of Security',
       tags: ['Security', 'Compliance', 'Multi-Cloud']
     },
@@ -49,7 +49,7 @@ export default function CaseStudiesPage() {
         { metric: '300+', label: 'Edge locations', icon: '🌐' },
         { metric: '10x', label: 'Traffic handling', icon: '📈' }
       ],
-      quote: 'We launched globally without building complex CDN infrastructure. BlackRoad's edge deployment gave us sub-30ms latency worldwide out of the box.',
+      quote: "We launched globally without building complex CDN infrastructure. BlackRoad's edge deployment gave us sub-30ms latency worldwide out of the box.",
       author: 'Alex Kim, Co-Founder',
       tags: ['Edge Computing', 'Gaming', 'Auto-Scale']
     }
