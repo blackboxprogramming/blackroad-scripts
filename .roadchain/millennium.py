@@ -37,26 +37,37 @@ def riemann(tokens: int) -> float:
     return 1.0 + 0.005 * sigmoid
 
 
-# ── 3. Yang-Mills — Running Coupling Constant (SU(3), N_f=3) ─────────
+# ── 3. Yang-Mills — Mass Gap & Confinement (SU(3), N_f=3) ─────────────
 def yang_mills(tokens: int, cost: float) -> float:
-    # One-loop QCD: alpha_s(Q) = alpha_s(M_Z) / (1 + (beta_0 * alpha_s(M_Z) / (2*pi)) * ln(Q^2/M_Z^2))
+    # The Yang-Mills Millennium Problem asks: prove SU(3) has a mass gap > 0.
+    # We compute TWO quantities from real QCD:
+    #   1. Running coupling alpha_s(Q) via one-loop RG evolution
+    #   2. Confinement ratio: alpha_s(Q_low) / alpha_s(Q_high)
+    # The ratio measures how much the coupling GROWS toward IR — the
+    # signature of confinement and the mass gap.
     alpha_mz = 0.118
     N_c = 3  # SU(3) colors
     N_f = 3  # light flavors
     beta_0 = (11 * N_c - 2 * N_f) / (12 * math.pi)  # = 27/(12*pi)
     M_Z = 91.1876  # GeV
-    Q = max(1.0, math.sqrt(abs(tokens) * max(cost, 0.001)))
-    if Q <= M_Z:
-        Q = M_Z + 1.0
-    log_ratio = math.log(Q * Q / (M_Z * M_Z))
-    denom = 1.0 + beta_0 * alpha_mz * log_ratio
-    if denom <= 0:
-        denom = 0.001
-    alpha_q = alpha_mz / denom
-    # Lambda_QCD proxy
-    lambda_qcd = M_Z * math.exp(-1.0 / (2.0 * beta_0 * alpha_mz))
-    mass_gap_proxy = lambda_qcd / (Q * Q) if Q > 0 else 0
-    return 1.0 + 0.005 * min(mass_gap_proxy, 1.0)
+    # Two energy scales from the inputs
+    Q_high = max(2.0, math.sqrt(abs(tokens) * max(cost, 0.001)))
+    Q_low = max(1.0, Q_high / max(1.0 + (tokens % 100), 2.0))
+    # Running coupling at both scales
+    def alpha_s(Q):
+        if Q <= 0:
+            return alpha_mz
+        lr = math.log(max(Q * Q / (M_Z * M_Z), 1e-30))
+        d = 1.0 + beta_0 * alpha_mz * lr
+        return alpha_mz / max(d, 0.01)
+    a_high = alpha_s(Q_high)
+    a_low = alpha_s(Q_low)
+    # Confinement ratio: how much stronger is the force at low energy?
+    # In real QCD this diverges (confinement). Our one-loop approx stays finite.
+    ratio = a_low / max(a_high, 0.001)
+    # Map ratio through sigmoid: ratio=1 (no running) → 0, ratio>2 (strong running) → ~1
+    confinement = 1.0 / (1.0 + math.exp(-(ratio - 1.5) * 3.0))
+    return 1.0 + 0.005 * confinement
 
 
 # ── 4. Navier-Stokes — Reynolds Number Turbulence ─────────────────────
