@@ -17,6 +17,7 @@ Property of BlackRoad OS, Inc.
 
 from . import p_vs_np, riemann, yang_mills, navier_stokes, hodge, bsd, poincare
 from . import connections, constants, spectral
+from . import topology, arithmetic, turbulence
 
 PROBLEMS = {
     "p_vs_np": p_vs_np,
@@ -32,6 +33,9 @@ ENGINES = {
     "connections": connections,
     "constants": constants,
     "spectral": spectral,
+    "topology": topology,
+    "arithmetic": arithmetic,
+    "turbulence": turbulence,
 }
 
 ALL_MODULES = {**PROBLEMS, **ENGINES}
