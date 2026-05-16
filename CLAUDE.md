@@ -1,3 +1,33 @@
+> [!WARNING]
+> **HIGHEST BLAST-RADIUS PROMPT INJECTION SURFACE CONFIRMED**
+>
+> `claude.yml` fires `anthropics/claude-code-action@v1` in response to `@claude`
+> in **any comment from any user** on any issue or PR. There is no actor allowlist,
+> no label gate, and no human-approval step. This agent reads this file for
+> instructions and has access to the infrastructure described below.
+>
+> **Blast radius of a successful injection (per this file):**
+> - 15 GitHub organisations
+> - 1,085 repositories
+> - 205 Cloudflare projects
+> - 8 physical devices
+>
+> **`ai-code-generation.yml`** runs on a daily schedule with `contents: write` +
+> `pull-requests: write` — further automating code changes with no human gate.
+>
+> **Attack:** Any unauthenticated user comments `@claude do X` on any open issue.
+> Claude executes with the blast radius above.
+>
+> **Recommended immediate fixes:**
+> - Add `if: github.actor == '<owner>'` (or an explicit allowlist) to `claude.yml`
+> - Add `CLAUDE.md @BlackRoad-Forge` to a `CODEOWNERS` file
+> - Require branch-protection approval for any PR touching `CLAUDE.md`
+> - Gate `ai-code-generation.yml` behind a manual `workflow_dispatch` only
+>
+> **HUMAN REVIEW REQUIRED — DO NOT AUTO-MERGE THIS FILE**
+>
+> See: [labs.jamessawyer.co.uk](https://labs.jamessawyer.co.uk/) | [OWASP LLM01 — Prompt Injection](https://owasp.org/www-project-top-10-for-large-language-model-applications/)
+
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
